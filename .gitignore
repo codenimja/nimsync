@@ -1,0 +1,38 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+test
+tests/test_*
+tests/*/*.exe
+tests/*/*/*.exe
+
+# Nim cache
+nimcache/
+.nimcache/
+
+# Performance benchmarks
+benchmarks/results/*/summary.md
+benchmarks/reports/benchmark_results_*.csv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.bak

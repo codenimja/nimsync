@@ -1,0 +1,77 @@
+{
+  "benchmark": "nimsync_performance_suite",
+  "version": "0.3.0",
+  "timestamp": "2025-10-30T13:47:00Z",
+  "environment": {
+    "os": "",
+    "cpu": "",
+    "memory": "",
+    "nim_version": "",
+    "nimsync_version": ""
+  },
+  "tests": [
+    {
+      "name": "spsc_channel_throughput",
+      "type": "throughput",
+      "iterations": 1000000,
+      "result": {
+        "operations_per_second": 0,
+        "latency_ns": {
+          "min": 0,
+          "avg": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0
+        },
+        "memory_per_op": 0,
+        "status": "completed"
+      }
+    },
+    {
+      "name": "mpmc_channel_throughput", 
+      "type": "throughput",
+      "iterations": 1000000,
+      "result": {
+        "operations_per_second": 0,
+        "latency_ns": {
+          "min": 0,
+          "avg": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0
+        },
+        "memory_per_op": 0,
+        "status": "completed"
+      }
+    },
+    {
+      "name": "task_spawn_rate",
+      "type": "throughput", 
+      "iterations": 100000,
+      "result": {
+        "tasks_per_second": 0,
+        "overhead_ns": 0,
+        "memory_per_task": 0,
+        "status": "completed"
+      }
+    },
+    {
+      "name": "cancellation_performance",
+      "type": "throughput",
+      "iterations": 100000,
+      "result": {
+        "operations_per_second": 0,
+        "latency_ns": 0,
+        "status": "completed"
+      }
+    }
+  ],
+  "summary": {
+    "total_runtime_seconds": 0,
+    "peak_memory_usage_bytes": 0,
+    "successful_tests": 0,
+    "failed_tests": 0
+  }
+}

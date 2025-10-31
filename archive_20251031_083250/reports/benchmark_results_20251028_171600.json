@@ -1,0 +1,15 @@
+{
+  "timestamp": "20251028_171600",
+  "system": {
+    "os": "Linux",
+    "cpu_cores": 16,
+    "memory": "15Gi"
+  },
+  "benchmarks": [
+    {
+      "name": "Basic Async Operations",
+      "duration": "1.226",
+      "status": "failed"
+    }
+  ]
+}
