@@ -1,5 +1,5 @@
-# apocalypse_plus.nim - THE FINAL BOSS SUITE
-# Real production validation: Database, WebSocket, Distributed Chaos
+# comprehensive_stress_test.nim - PRODUCTION VALIDATION SUITE
+# Real production validation: Database, WebSocket, Distributed Systems
 #
 # Dependencies (install with nimble):
 # nimble install asyncpg
@@ -14,7 +14,7 @@
 import nimsync, std/[random, times, strformat, asyncdispatch, atomics, strutils]
 
 # ============================================================================
-# 1. REAL DATABASE CARNAGE - PostgreSQL Connection Pool Thrashing
+# 1. DATABASE STRESS TEST - PostgreSQL Connection Pool Performance
 # ============================================================================
 
 proc db_query_task(total_queries, failed_queries: var Atomic[int]) {.async.} =
@@ -36,7 +36,7 @@ proc db_query_task(total_queries, failed_queries: var Atomic[int]) {.async.} =
     atomicInc(failed_queries, 1)
 
 proc real_db_torture() {.async.} =
-  echo "🔥 REAL DATABASE CARNAGE: PostgreSQL Pool Thrashing"
+  echo "🔥 DATABASE STRESS TEST: PostgreSQL Pool Performance Testing"
 
   # Note: Requires asyncpg dependency
   # let pool = await newAsyncPool("postgres://user:pass@localhost/testdb", maxConnections = 8)
@@ -54,7 +54,7 @@ proc real_db_torture() {.async.} =
   echo &"✅ DB Torture Complete: {total_queries.load()} queries, {failed_queries.load()} failed"
 
 # ============================================================================
-# 2. WEBSOCKET REAL CLIENT FLOOD - Actual WS Connections
+# 2. WEBSOCKET LOAD TEST - Actual WS Connections
 # ============================================================================
 
 proc websocket_real_client(id: int) {.async.} =
@@ -98,15 +98,15 @@ proc websocket_real_client(id: int) {.async.} =
 
   echo &"✅ Client {id} complete: {messages_sent} sent, {messages_received} received"
 
-proc websocket_flood_real() {.async.} =
-  echo "🌪️ WEBSOCKET REAL CLIENT FLOOD: 1000 actual connections to localhost:8080"
+proc websocket_load_real() {.async.} =
+  echo "🌪️ WEBSOCKET LOAD TEST: 1000 actual connections to localhost:8080"
 
   var clients: seq[Future[void]]
   for i in 0..<1000:
     clients.add(websocket_real_client(i))
 
   await all(clients)
-  echo "🌟 Real WebSocket flood survived!"
+  echo "🌟 WebSocket load test completed!"
 
 # ============================================================================
 # 3. DISTRIBUTED CLUSTER MAYHEM - 16 Nodes with Gossip & Failover
@@ -170,7 +170,7 @@ proc simulate_node_crash(nodes: seq[ClusterNode]) {.async.} =
       crash_node.active = false
       echo &"💥 NODE CRASH: Node {crash_node.id} went down!"
 
-proc distributed_chaos() {.async.} =
+proc distributed_stress_test() {.async.} =
   echo "🌐 DISTRIBUTED CLUSTER MAYHEM: 16 nodes with gossip & failover"
 
   # Create 16 nodes
@@ -227,33 +227,33 @@ proc distributed_chaos() {.async.} =
   echo &"📨 Total gossip messages: {total_messages}"
 
 # ============================================================================
-# MAIN APOCALYPSE EXECUTION
+# MAIN PRODUCTION VALIDATION EXECUTION
 # ============================================================================
 
-proc run_apocalypse_plus() {.async.} =
-  echo "🚨 APOCALYPSE PLUS: THE FINAL BOSS SUITE"
+proc run_comprehensive_stress_test() {.async.} =
+  echo "� COMPREHENSIVE STRESS TEST: PRODUCTION VALIDATION SUITE"
   echo "⚠️  Warning: This will attempt real database and network connections"
   echo "⚠️  Ensure PostgreSQL and WebSocket server are running!"
   echo ""
 
   try:
-    echo "🔥 Phase 1: Real Database Carnage"
+    echo "🔥 Phase 1: Database Stress Test"
     await real_db_torture()
     echo ""
 
-    echo "🌐 Phase 2: WebSocket Real Client Flood"
-    await websocket_flood_real()
+    echo "🌐 Phase 2: WebSocket Load Test"
+    await websocket_load_real()
     echo ""
 
     echo "🌌 Phase 3: Distributed Cluster Mayhem"
-    await distributed_chaos()
+    await distributed_stress_test()
     echo ""
 
-    echo "🎉 APOCALYPSE PLUS COMPLETE - nimsync survived the final boss!"
+    echo "🎉 COMPREHENSIVE STRESS TEST COMPLETE - nimsync validated for production!"
 
   except Exception as e:
-    echo &"💥 APOCALYPSE FAILED: {e.msg}"
+    echo &"💥 STRESS TEST FAILED: {e.msg}"
     raise
 
 when isMainModule:
-  waitFor run_apocalypse_plus()
+  waitFor run_comprehensive_stress_test()

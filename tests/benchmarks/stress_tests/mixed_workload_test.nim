@@ -1,4 +1,4 @@
-# mixed_workload_chaos.nim
+# mixed_workload_test.nim
 import nimsync, std/[random, times, strformat, asyncdispatch]
 
 proc cpu_intensive_task(iterations: int): Future[int] {.async.} =
@@ -21,8 +21,8 @@ proc memory_task_proc(): Future[void] {.async.} =
   for j in 0..<data.len:
     data[j] = j * j
 
-proc mixed_workload_chaos_test() {.async.} =
-  echo "🎭 MIXED WORKLOAD CHAOS: CPU + IO + Memory"
+proc mixed_workload_test() {.async.} =
+  echo "🎭 MIXED WORKLOAD TEST: CPU + IO + Memory"
   const total_tasks = 10_000
 
   var cpu_bound_tasks = 0
@@ -60,9 +60,9 @@ proc mixed_workload_chaos_test() {.async.} =
     except:
       inc failed_tasks
 
-  echo &"✅ Chaos survived: {completed_tasks}/{total_tasks} tasks"
+  echo &"✅ Test completed: {completed_tasks}/{total_tasks} tasks"
   echo &"📊 CPU: {cpu_bound_tasks}, IO: {io_bound_tasks}, Memory: {memory_bound_tasks}"
   echo &"❌ Failed: {failed_tasks}"
 
 when isMainModule:
-  waitFor mixed_workload_chaos_test()
+  waitFor mixed_workload_test()

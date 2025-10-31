@@ -1,6 +1,6 @@
 import nimsync, std/[times, strformat, random]
 
-# Multi-Producer Channel Thrash Test
+# Multi-Producer Channel Stress Test
 # Tests channel performance under high load
 # Adapted from Rust Crossbeam and Go channel benchmarks
 
@@ -10,7 +10,7 @@ proc stressTest() =
   const MsgsPerProducer = 1000
   const BufferSize = 256
 
-  echo "=== Multi-Producer Channel Thrash Test ==="
+  echo "=== Multi-Producer Channel Stress Test ==="
   echo fmt"{NProducers} producers, {NConsumers} consumers, {MsgsPerProducer} msgs each"
 
   let ch = newChannel[int](BufferSize, ChannelMode.SPSC)

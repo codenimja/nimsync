@@ -39,7 +39,7 @@ proc consumer(ch: Channel[string]) {.async.} =
     else:
       await sleepAsync(1)
 
-proc streaming_chaos() {.async.} =
+proc streaming_stress_test() {.async.} =
   echo "⛓️ STREAMING PIPELINE UNDER FIRE"
   var ch1 = newChannel[string](100, ChannelMode.SPSC)
   var ch2 = newChannel[string](50, ChannelMode.SPSC)  # Backpressure!
@@ -53,4 +53,4 @@ proc streaming_chaos() {.async.} =
   echo "Pipeline held under 100k events"
 
 when isMainModule:
-  waitFor streaming_chaos()
+  waitFor streaming_stress_test()

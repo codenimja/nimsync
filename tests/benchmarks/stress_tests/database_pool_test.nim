@@ -1,4 +1,4 @@
-# database_pool_hell.nim
+# database_pool_test.nim
 import nimsync, std/[random, times, strformat, asyncdispatch]
 
 type
@@ -39,8 +39,8 @@ proc simulate_query(conn: DbConnection): Future[void] {.async.} =
   if rand(100) < 2:
     raise newException(IOError, &"DB timeout on conn {conn.id}")
 
-proc database_chaos_test() {.async.} =
-  echo "🗡️ DATABASE CONNECTION POOL HELL"
+proc database_pool_stress_test() {.async.} =
+  echo "🗡️ DATABASE CONNECTION POOL STRESS TEST"
   let pool = newDbPool(8)  # Only 8 connections
 
   var tasks = newSeq[Future[void]]()
@@ -59,4 +59,4 @@ proc database_chaos_test() {.async.} =
   echo "✅ Survived DB pool starvation"
 
 when isMainModule:
-  waitFor database_chaos_test()
+  waitFor database_pool_stress_test()
