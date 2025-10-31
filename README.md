@@ -1,4 +1,4 @@
-# nimsync v0.1.0 — **217M+ ops/sec SPSC**
+# nimsync v0.1.0 — **213M+ ops/sec SPSC**
 
 [![CI](https://github.com/codenimja/nimsync/actions/workflows/ci.yml/badge.svg)](https://github.com/codenimja/nimsync/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/codenimja/nimsync?color=blue)](https://github.com/codenimja/nimsync/releases)
