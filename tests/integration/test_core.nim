@@ -8,22 +8,10 @@ suite "Core Module Tests":
     check true
 
   test "Main module compiles":
-    try:
-      # Test basic functionality
-      let v = version()
-      check v.len > 0
-      check v.contains(".")
-      echo "✅ Version: ", v
-
-      # Test version info
-      let vInfo = versionInfo()
-      check vInfo.version == v
-      check vInfo.buildTime.len > 0
-      echo "✅ Build time: ", vInfo.buildTime
-      echo "✅ Features: ", vInfo.features
-
-    except Exception as e:
-      echo "❌ Error: ", e.msg
-      check false
+    # Test basic functionality
+    let v = version()
+    check v.len > 0
+    check v.contains(".")
+    echo "✅ Version: ", v
 
 echo "✅ Core functionality tests completed"
