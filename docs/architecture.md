@@ -2,7 +2,7 @@
 
 ## Overview
 
-nimsync provides **217M+ ops/sec lock-free SPSC channels** for high-performance async communication in Nim.
+nimsync provides **213M+ ops/sec lock-free SPSC channels** for high-performance async communication in Nim.
 
 ## Core Design
 
@@ -13,7 +13,7 @@ nimsync provides **217M+ ops/sec lock-free SPSC channels** for high-performance 
 - **Safety**: ORC memory management, zero GC pressure
 
 ### Performance Characteristics
-- **Throughput**: 217,400,706 ops/sec (single-threaded)
+- **Throughput**: 213,567,459 ops/sec (single-threaded)
 - **Latency**: Sub-microsecond for uncontended operations
 - **Memory**: <1KB per channel + O(capacity) buffer
 - **Scalability**: Linear scaling with channel capacity
@@ -80,7 +80,7 @@ if chan.tryReceive(value):
 ## Benchmarks
 
 ### Current Performance (v0.1.0)
-- **SPSC Channels**: 217M+ ops/sec
+- **SPSC Channels**: 213M+ ops/sec
 - **Memory Efficiency**: <1KB per channel
 - **Latency**: <1μs uncontended
 
@@ -88,7 +88,7 @@ if chan.tryReceive(value):
 - **Go channels**: ~5-10M ops/sec
 - **Rust crossbeam**: ~50-100M ops/sec
 - **C++ lock-free**: ~100-200M ops/sec
-- **nimsync**: **217M+ ops/sec** (4.2x target exceeded)
+- **nimsync**: **213M+ ops/sec** (4.1x target exceeded)
 
 ## Safety & Correctness
 

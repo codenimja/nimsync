@@ -1,19 +1,19 @@
-# nimsync v0.1.0 — **217M+ ops/sec SPSC**
+# nimsync v0.1.0 — **213M+ ops/sec SPSC**
 
 [![CI](https://github.com/codenimja/nimsync/actions/workflows/ci.yml/badge.svg)](https://github.com/codenimja/nimsync/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/codenimja/nimsync?color=blue)](https://github.com/codenimja/nimsync/releases)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Nim](https://img.shields.io/badge/Nim-2.0+-brightgreen?logo=nim)](https://nim-lang.org)
-[![Performance](https://img.shields.io/badge/Performance-217M%2B%20ops%2Fsec-red)](https://github.com/codenimja/nimsync/blob/main/benchmarks/reports/performance_report_v0.1.0.md)
+[![Performance](https://img.shields.io/badge/Performance-213M%2B%20ops%2Fsec-red)](https://github.com/codenimja/nimsync/blob/main/benchmarks/reports/performance_report_v0.1.0.md)
 [![codecov](https://codecov.io/gh/codenimja/nimsync/branch/main/graph/badge.svg)](https://codecov.io/gh/codenimja/nimsync)
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/codenimja/nimsync)](https://github.com/codenimja/nimsync/commits/main)
+[![GitHub last commit](https://img.shields.io/github/last-commit/codenimja/nimsync/main?style=flat)](https://github.com/codenimja/nimsync/commits/main)
 [![GitHub issues](https://img.shields.io/github/issues/codenimja/nimsync)](https://github.com/codenimja/nimsync/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/codenimja/nimsync)](https://github.com/codenimja/nimsync/pulls)
-[![GitHub contributors](https://img.shields.io/github/contributors/codenimja/nimsync)](https://github.com/codenimja/nimsync/graphs/contributors)
+[![GitHub contributors](https://img.shields.io/github/contributors/codenimja/nimsync?style=flat)](https://github.com/codenimja/nimsync/graphs/contributors)
 
-**Single-threaded:** 217,400,706 ops/sec
-**Target:** 52M → **418% ACHIEVED**
+**Single-threaded:** 213,567,459 ops/sec
+**Target:** 52M → **410% ACHIEVED**
 
 Built with one hand. After 2 brain surgeries.
 
@@ -26,7 +26,7 @@ nimble install nimsync
 ```bash
 nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim
 ./tests/performance/benchmark_spsc
-# → 217,400,706 ops/sec
+# → 213,567,459 ops/sec
 ```
 
 ## Usage
@@ -46,7 +46,7 @@ if chan.tryReceive(value):
 ```
 
 ## Performance
-- **190M+ ops/sec** single-threaded throughput
+- **213M+ ops/sec** single-threaded throughput
 - **Lock-free** atomic operations
 - **ORC-safe** zero GC pressure
 - **No dependencies** pure stdlib
@@ -63,18 +63,6 @@ if chan.tryReceive(value):
 - [ ] Select operations (v0.2.0)
 - [ ] Structured concurrency (v0.3.0)
 - [ ] Actors and supervision (v0.4.0)
-
-## Consulting
-codenimja@proton.me
-
-Audit: $50k
-Nimony Runtime: $100k+
-
-MIT. import nimsync
-- Multi-threaded (4 cores): +15-20% 
-- Multi-threaded (8+ cores): +20-30%
-- NUMA systems: +200-400% (2 sockets), +900-2900% (4 sockets)
-- High-load latency (p99): -30-50% improvement
 
 ## Key Features
 
@@ -111,13 +99,12 @@ MIT. import nimsync
 - Intelligent task distribution inspired by Go and Tokio
 - Per-thread work-stealing queues with adaptive victim selection
 - Exponential backoff for contention reduction
-- Real-time load metrics (15-20% improvement on multi-core systems)
+- Real-time load metrics
 
 **NUMA-Aware Optimizations**
 - Automatic NUMA topology detection (Linux)
 - Node Replication pattern for high-contention scenarios
 - NUMA-local communication prioritized with transparent fallback
-- 2-30x improvement on NUMA systems
 
 **OpenTelemetry Distributed Tracing**
 - W3C Trace Context compliance
@@ -130,7 +117,6 @@ MIT. import nimsync
 - Credit-based and adaptive flow control modes
 - MIAD algorithm with exponential smoothing
 - Dynamic rate limiting based on system latency feedback
-- 30-50% latency reduction under load
 
 **Erlang-Style Supervision Trees**
 - Hierarchical fault tolerance with automatic recovery
@@ -358,18 +344,6 @@ waitFor timeoutExample()
 ## Performance
 
 ### World-Leading Performance Benchmarks
-
-nimsync delivers industry-leading performance across all metrics:
-
-| Scenario | Improvement |
-|----------|------------|
-| Single-threaded | +5-10% |
-| Multi-threaded (4 cores) | +15-20% |
-| Multi-threaded (8+ cores) | +20-30% |
-| NUMA systems (2 sockets) | +200-400% |
-| NUMA systems (4 sockets) | +900-2900% |
-| High-load latency (p99) | -30-50% |
-| Memory usage | -5-15% |
 
 ### Component Performance Leaders
 

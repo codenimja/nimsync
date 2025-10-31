@@ -1,7 +1,7 @@
 # nimsync.nimble
 version       = "0.1.0"
 author        = "codenimja"
-description   = "217M+ ops/sec lock-free SPSC channels in Nim"
+description   = "213M+ ops/sec lock-free SPSC channels in Nim"
 license       = "MIT"
 srcDir        = "src"
 

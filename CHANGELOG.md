@@ -14,7 +14,7 @@ Production-ready lock-free SPSC channels with industry-leading performance.
 - **ORC Memory Management** - Zero GC pressure in hot paths
 - **Atomic Operations** - Thread-safe with proper memory barriers
 - **Production API** - `newChannel`, `trySend`, `tryReceive`
-- **Performance Benchmarks** - Validated against 52M ops/sec target (418% achieved)
+- **Performance Benchmarks** - Validated against 52M ops/sec target (410% achieved)
 - **Unit Tests** - Basic functionality validation
 - **CI/CD Pipeline** - Automated testing on GitHub Actions
 - **Documentation** - Performance-focused README and architecture guide

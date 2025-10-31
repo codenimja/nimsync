@@ -6,14 +6,14 @@ nimsync Version: 0.1.0
 
 ## Executive Summary
 
-nimsync v0.1.0 demonstrates exceptional performance with lock-free SPSC channel throughput reaching **219M+ operations/second**, significantly exceeding the target of 52M ops/sec (4.2x improvement). Comprehensive stress testing validates performance under extreme conditions including concurrent access patterns, IO simulation, producer/consumer contention, and backpressure scenarios.
+nimsync v0.1.0 demonstrates exceptional performance with lock-free SPSC channel throughput reaching **213M+ operations/second**, significantly exceeding the target of 52M ops/sec (4.1x improvement). Comprehensive stress testing validates performance under extreme conditions including concurrent access patterns, IO simulation, producer/consumer contention, and backpressure scenarios.
 
 ## Benchmark Results
 
 ### SPSC Channel Performance ✅
-- **Throughput**: 219,203,123 ops/sec
+- **Throughput**: 213,567,459 ops/sec
 - **Target**: 52M ops/sec
-- **Status**: ✅ PASSED (421% of target)
+- **Status**: ✅ PASSED (410% of target)
 - **Implementation**: Lock-free atomic operations with memory barriers
 - **Memory Model**: ORC (Nim's advanced GC)
 - **Optimization**: -d:danger --opt:speed --threads:on --mm:orc
@@ -82,7 +82,7 @@ Comprehensive stress testing validates nimsync performance under extreme conditi
 nimsync v0.1.0 establishes a solid foundation with outstanding SPSC performance and comprehensive stress testing validation. The lock-free architecture and ORC memory model provide excellent scalability, thoroughly tested under extreme concurrent, IO-bound, and contention scenarios. The 4-stress-test suite ensures reliability across diverse usage patterns.
 
 **Performance Validation**: ✅ COMPLETE
-- SPSC throughput: 219M+ ops/sec (4.2x target achievement)
+- SPSC throughput: 213M+ ops/sec (4.1x target achievement)
 - Stress testing: All 4 stress tests PASSED
 - Concurrent load: 31M+ ops/sec maintained
 - Edge cases: Buffer overflow, backpressure, contention handled gracefully
