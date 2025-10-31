@@ -1,8 +1,8 @@
 # nimsync Performance Report - v0.1.0
-Date: $(date)
-System: $(uname -a)
-Nim Version: $(nim --version 2>&1 | head -1)
-nimsync Version: $(grep version nimsync.nimble | head -1 | cut -d '"' -f 2)
+Date: Fri Oct 31 09:42:08 AM EDT 2025
+System: Linux pop-os 6.16.3-76061603-generic #202508231538~1761055796~22.04~ba79424 SMP PREEMPT_DYNAMIC Tue O x86_64 x86_64 x86_64 GNU/Linux
+Nim Version: Nim Compiler Version 2.2.4 [Linux: amd64]
+nimsync Version: 0.1.0
 
 ## Executive Summary
 
