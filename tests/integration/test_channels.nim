@@ -4,12 +4,13 @@
 
 import std/[unittest, strutils, asyncdispatch]
 import ../../src/nimsync
+import ../../src/nimsync/channels
 
 suite "Channel System Tests":
   test "Channel creation and basic properties":
     try:
-      let chan = newChannel[int](10, ChannelMode.SPSC)
-      check chan.capacity == 10
+      var chan = newChannel[int](10, channels.ChannelMode.SPSC)
+      check capacity(chan) == 10
       check chan.isEmpty
       check not chan.isFull
       echo "✅ Channel creation works"
@@ -19,14 +20,14 @@ suite "Channel System Tests":
 
   test "Channel send and receive":
     try:
-      let chan = newChannel[int](5, ChannelMode.SPSC)
+      var chan = newChannel[int](5, channels.ChannelMode.SPSC)
 
       # Send a value
-      await chan.send(42)
+      waitFor send(chan, 42)
       check not chan.isEmpty
 
       # Receive the value
-      let value = await chan.recv()
+      let value = waitFor recv(chan)
       check value == 42
       check chan.isEmpty
       echo "✅ Channel send/receive works"
@@ -36,19 +37,19 @@ suite "Channel System Tests":
 
   test "Channel multiple values":
     try:
-      let chan = newChannel[string](3, ChannelMode.SPSC)
+      var chan = newChannel[string](3, channels.ChannelMode.SPSC)
 
       # Send multiple values
-      await chan.send("first")
-      await chan.send("second")
-      await chan.send("third")
+      await send(chan, "first")
+      await send(chan, "second")
+      await send(chan, "third")
 
       check chan.isFull
 
       # Receive all values
-      let first = await chan.recv()
-      let second = await chan.recv()
-      let third = await chan.recv()
+      let first = await recv(chan)
+      let second = await recv(chan)
+      let third = await recv(chan)
 
       check first == "first"
       check second == "second"
@@ -61,11 +62,11 @@ suite "Channel System Tests":
 
   test "Channel backpressure":
     try:
-      let chan = newChannel[int](2, ChannelMode.SPSC)  # Small capacity
+      var chan = newChannel[int](2, channels.ChannelMode.SPSC)  # Small capacity
 
       # Fill the channel
-      await chan.send(1)
-      await chan.send(2)
+      await send(chan, 1)
+      await send(chan, 2)
       check chan.isFull
 
       var sendBlocked = false
@@ -73,7 +74,7 @@ suite "Channel System Tests":
       # Try to send another (should block due to backpressure)
       proc blockedSender(): Future[void] {.async.} =
         sendBlocked = true
-        await chan.send(3)
+        await send(chan, 3)
 
       let senderFuture = blockedSender()
 
@@ -82,7 +83,7 @@ suite "Channel System Tests":
       check sendBlocked
 
       # Receive one to unblock
-      let value = await chan.recv()
+      let value = await recv(chan)
       check value == 1
 
       # Now sender should complete
