@@ -5,9 +5,11 @@
 import std/[tables, random, times, sequtils, os, strutils]
 import chronos
 import ../../src/nimsync
+import ../../src/nimsync/errors
+import ../../src/nimsync/streams
 import ./async_test_framework
 
-export tables, random, times, sequtils, chronos, nimsync, async_test_framework
+export tables, random, times, sequtils, chronos, nimsync, errors, streams, async_test_framework
 
 type
   # Test message types
@@ -82,12 +84,12 @@ proc createTestChannel*[T](size: int, mode: ChannelMode): auto =
   ## Create a test channel with specified parameters
   return newChannel[T](size, mode)
 
-proc fillChannel*[T](channel: var channels.Channel[T], items: openArray[T]): Future[void] {.async.} =
+proc fillChannel*[T](channel: var Channel[T], items: openArray[T]): Future[void] {.async.} =
   ## Fill channel with test data
   for item in items:
     await channel.send(item)
 
-proc drainChannel*[T](channel: var channels.Channel[T], maxItems: int = -1): Future[seq[T]] {.async.} =
+proc drainChannel*[T](channel: var Channel[T], maxItems: int = -1): Future[seq[T]] {.async.} =
   ## Drain all items from channel
   var items: seq[T] = @[]
   var count = 0
