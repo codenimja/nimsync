@@ -4,7 +4,6 @@ author        = "codenimja"
 description   = "217M+ ops/sec lock-free SPSC channels in Nim"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["benchmark_spsc"]
 
 requires "nim >= 2.0.0"
 
