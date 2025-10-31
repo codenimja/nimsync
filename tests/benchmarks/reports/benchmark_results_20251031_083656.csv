@@ -1,0 +1,4 @@
+Benchmark,Status,Duration,LogFile
+Benchmark Select,FAILED,N/A,benchmarks/logs/Benchmark_Select_20251031_083656.log
+Benchmark Spsc,FAILED,N/A,benchmarks/logs/Benchmark_Spsc_20251031_083656.log
+Benchmark Stress,FAILED,N/A,benchmarks/logs/Benchmark_Stress_20251031_083656.log
