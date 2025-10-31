@@ -12,13 +12,8 @@
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/codenimja/nimsync)](https://github.com/codenimja/nimsync/pulls)
 [![GitHub contributors](https://img.shields.io/github/contributors/codenimja/nimsync)](https://github.com/codenimja/nimsync/graphs/contributors)
 
-[![Go](https://img.shields.io/badge/Beats_Go-26x-orange)](https://github.com/codenimja/nimsync/blob/main/benchmarks/reports/performance_report_v0.1.0.md)
-[![Rust](https://img.shields.io/badge/Beats_Rust-13x-orange)](https://github.com/codenimja/nimsync/blob/main/benchmarks/reports/performance_report_v0.1.0.md)
-[![C++](https://img.shields.io/badge/Beats_C%2B%2B-2.6x-orange)](https://github.com/codenimja/nimsync/blob/main/benchmarks/reports/performance_report_v0.1.0.md)
-
 **Single-threaded:** 217,400,706 ops/sec
 **Target:** 52M → **418% ACHIEVED**
-**Beats Go 26×. Rust 13×. C++ 2.6×.**
 
 Built with one hand. After 2 brain surgeries.
 
