@@ -6,7 +6,7 @@ const
   NIMSYNC_MINOR* = 0
   NIMSYNC_PATCH* = 0
   NIMSYNC_PRERELEASE* = ""
-  NIMSYNC_BUILD* = "apocalypse"
+  NIMSYNC_BUILD* = "production"
 
 proc version*: string =
   if NIMSYNC_PRERELEASE != "":
@@ -15,4 +15,4 @@ proc version*: string =
     fmt"{NIMSYNC_MAJOR}.{NIMSYNC_MINOR}.{NIMSYNC_PATCH}"
 
 when isMainModule:
-  echo fmt"nimsync v{version()} ({NIMSYNC_BUILD}) — READY TO BURN"
+  echo fmt"nimsync v{version()} ({NIMSYNC_BUILD})"
