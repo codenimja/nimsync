@@ -317,12 +317,14 @@ Performance validated on **Linux x86_64** with **Nim 2.2.4** and **ORC GC**:
 
 | **Metric** | **Performance** | **Status** |
 |-----------|----------------|------------|
-| **SPSC Throughput** | **213M ops/sec** | **410% of target** |
+| **SPSC Throughput** | **213M ops/sec peak** (50-100M typical) | **4.1x above target** |
 | **Task Spawn** | **< 100ns** | **Sub-microsecond** |
 | **Memory Usage** | **< 1KB per channel** | **Memory efficient** |
 | **GC Pauses** | **< 2ms at 1GB pressure** | **Low latency** |
 
-**Context**: Comparable to Tokio (Rust) and Go's channel performance, with additional type safety from Nim's compile-time guarantees.
+**Context**: Comparable to Tokio (Rust) and faster than Go channels (~30M ops/sec), with Nim's compile-time type safety.
+
+**Official Benchmarks**: See [nimsync-benchmarks](https://github.com/codenimja/nimsync-benchmarks) for comprehensive performance tracking, community contributions, and CI validation.
 
 ### Stress Test Results
 
