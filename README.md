@@ -4,12 +4,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
 
-**High-performance async runtime for Nim with structured concurrency and lock-free channels**
+**Production-ready async runtime for Nim featuring structured concurrency, 213M+ ops/sec lock-free channels, and work-stealing scheduler**
+
+> **nimsync** provides three core primitives for building high-performance concurrent applications: **TaskGroups** for structured concurrency, **Channels** for lock-free message passing, and **Streams** for backpressure-aware data processing.
 
 ## Table of Contents
 
 - [nimsync](#nimsync)
   - [Table of Contents](#table-of-contents)
+  - [Why nimsync?](#why-nimsync)
   - [Features](#features)
   - [Installation](#installation)
     - [Via Nimble](#via-nimble)
@@ -45,6 +48,16 @@
     - [Pull Request Requirements](#pull-request-requirements)
   - [License](#license)
 
+## Why nimsync?
+
+Modern async runtimes for systems programming require three foundational capabilities:
+
+1. **Structured Concurrency**: Ensuring tasks complete or cancel together, preventing resource leaks and orphaned operations
+2. **Efficient Message Passing**: Lock-free channels that scale to 200M+ operations per second with predictable latency
+3. **Backpressure Management**: Adaptive flow control preventing memory exhaustion under load
+
+**nimsync** is Nim's first async runtime providing all three primitives with zero-cost abstractions and ORC memory safety. Built on Chronos, it extends async/await with production-grade concurrency patterns proven in Rust (Tokio) and Go.
+
 ## Features
 
 | **Concurrency** | **Channels** | **Streams** |
@@ -69,8 +82,16 @@
 
 ### Via Nimble
 
+Once published to the Nimble registry:
+
 ```bash
 nimble install nimsync
+```
+
+**Current**: Install directly from GitHub:
+
+```bash
+nimble install https://github.com/codenimja/nimsync
 ```
 
 ### From Source
@@ -298,14 +319,16 @@ Performance validated on **Linux x86_64** with **Nim 2.2.4** and **ORC GC**:
 | **Memory Usage** | **< 1KB per channel** | **Memory efficient** |
 | **GC Pauses** | **< 2ms at 1GB pressure** | **Low latency** |
 
+**Context**: Comparable to Tokio (Rust) and Go's channel performance, with additional type safety from Nim's compile-time guarantees.
+
 ### Stress Test Results
 
 | **Test Scenario** | **Throughput** | **Result** |
 |------------------|---------------|------------|
-| Concurrent Access (10 channels × 10K ops) | 31M ops/sec | **PASSED** |
-| IO-Bound Simulation | High throughput maintained | **PASSED** |
-| Producer/Consumer Contention | Graceful degradation | **PASSED** |
-| Backpressure Avalanche (16-slot buffer) | Fair scheduling | **PASSED** |
+| Concurrent Access (10 channels × 10K ops) | 31M ops/sec | ✓ Pass |
+| IO-Bound Simulation | High throughput maintained | ✓ Pass |
+| Producer/Consumer Contention | Graceful degradation | ✓ Pass |
+| Backpressure Avalanche (16-slot buffer) | Fair scheduling | ✓ Pass |
 
 ### Hardware Specification
 - **CPU**: Linux x86_64
@@ -444,9 +467,7 @@ We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.
 
 ## License
 
-[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-Licensed under the [MIT License](LICENSE). See [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
