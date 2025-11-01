@@ -213,9 +213,6 @@ Lock-free message passing with backpressure support:
 # SPSC (Single Producer Single Consumer)
 let spscChan = newChannel[string](1024, ChannelMode.SPSC)
 
-# MPMC support (planned)
-let mpmcChan = newChannel[int](512, ChannelMode.MPMC)
-
 # Non-blocking operations
 if spscChan.trySend("message"):
   echo "Sent successfully"

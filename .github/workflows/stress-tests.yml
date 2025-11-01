@@ -19,9 +19,10 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup Nim
-      uses: iffy/setup-nim@v2
+      uses: alaviss/setup-nim@0.1.1
       with:
-        nim-version: ${{ matrix.nim-version }}
+        path: nim
+        version: ${{ matrix.nim-version }}
 
     - name: Install dependencies
       run: |
@@ -73,13 +74,13 @@ jobs:
         echo "- **Status:** ✅ Passed" >> benchmark_reports/ci_summary.md
 
     - name: Upload Benchmark Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: benchmark-results-${{ matrix.nim-version }}
         path: benchmark_reports/
 
     - name: Upload Flame Graphs (if available)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: flame-graphs-${{ matrix.nim-version }}
         path: flame_graphs/
@@ -123,7 +124,7 @@ jobs:
         echo "Metrics collection completed" >> metrics_report.md
 
     - name: Upload Metrics Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: metrics-report
         path: metrics_report.md

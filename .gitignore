@@ -7,6 +7,8 @@
 
 # Test binaries
 test
+test_import
+VERSION
 tests/test_*
 tests/*/*.exe
 tests/*/*/*.exe
@@ -19,6 +21,11 @@ nimcache/
 benchmarks/results/*/summary.md
 benchmarks/reports/benchmark_results_*.csv
 benchmarks/reports/benchmark_summary_*.md
+tests/benchmarks/logs/*.log
+tests/benchmarks/results/**/*.md
+tests/benchmarks/results/**/*.txt
+tests/benchmarks/reports/*.csv
+!tests/benchmarks/reports/performance_report_v*.md
 
 # IDE
 .vscode/
