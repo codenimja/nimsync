@@ -18,6 +18,7 @@ nimcache/
 # Performance benchmarks
 benchmarks/results/*/summary.md
 benchmarks/reports/benchmark_results_*.csv
+benchmarks/reports/benchmark_summary_*.md
 
 # IDE
 .vscode/
@@ -36,3 +37,9 @@ logs/
 # Temporary files
 *.tmp
 *.bak
+
+# Generated documentation
+src/htmldocs/
+
+# Internal roadmap
+ROADMAP_v1.0.md
