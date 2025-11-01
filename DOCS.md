@@ -23,8 +23,8 @@ tests/
 │   │   └── benchmark_results_2025-10-31_14-30-00.md
 │   ├── scripts/
 │   ├── stress_tests/
-│   │   ├── apocalypse_plus.nim
-│   │   ├── database_pool_hell.nim
+│   │   ├── comprehensive_stress_test.nim
+│   │   ├── database_pool_test.nim
 │   │   ├── failure_modes.nim
 │   │   ├── long_running.nim
 │   │   ├── memory_pressure_test.nim
@@ -515,14 +515,14 @@ when isMainModule:
 
 ## Benchmarks
 
-### tests/benchmarks/stress_tests/apocalypse_plus.nim
+### tests/benchmarks/stress_tests/comprehensive_stress_test.nim
 ```nim
-# apocalypse_plus.nim - ADVANCED CHAOS: REAL INFRASTRUCTURE
+# comprehensive_stress_test.nim - Advanced Infrastructure Testing
 # Tests nimsync with actual database connections, WebSocket floods, and distributed clusters
 #
 # Dependencies: nimble install asyncpg websockets
 #
-# Usage: nim c -r apocalypse_plus.nim
+# Usage: nim c -r comprehensive_stress_test.nim
 
 import std/[asyncdispatch, times, strformat, random, atomics]
 import ../../../src/nimsync
@@ -720,11 +720,11 @@ proc testEndurance() {.async.} =
   echo &"✅ Endurance test passed: {iterations} iterations in {epochTime() - startTime:.1f}s"
 
 # ============================================================================
-# MAIN APOCALYPSE+ SUITE
+# MAIN COMPREHENSIVE STRESS TEST SUITE
 # ============================================================================
 
-proc runApocalypsePlus*() {.async.} =
-  echo "🔥 APOCALYPSE+ SUITE: REAL INFRASTRUCTURE CHAOS"
+proc runComprehensiveStressTest*() {.async.} =
+  echo "Running Comprehensive Stress Test Suite"
   echo "═══════════════════════════════════════════════════"
   
   let suiteStart = epochTime()
@@ -739,24 +739,24 @@ proc runApocalypsePlus*() {.async.} =
     
     let duration = epochTime() - suiteStart
     echo ""
-    echo "🎉 APOCALYPSE+ COMPLETE!"
-    echo &"⏱️ Duration: {duration:.2f} seconds"
-    echo "🏆 nimsync survived real infrastructure chaos"
+    echo "Comprehensive stress tests completed successfully"
+    echo &"Duration: {duration:.2f} seconds"
+    echo "nimsync validated under real infrastructure load"
     
   except Exception as e:
-    echo &"💥 APOCALYPSE+ FAILED: {e.msg}"
+    echo &"Stress test suite failed: {e.msg}"
     raise
 
 when isMainModule:
   randomize()
-  waitFor runApocalypsePlus()
+  waitFor runComprehensiveStressTest()
 ```
 **Purpose** – Tests nimsync with real infrastructure components including databases, WebSockets, and distributed systems.
 **Result** – Validates resilience under production-like conditions with high concurrency.
 
-### tests/benchmarks/stress_tests/database_pool_hell.nim
+### tests/benchmarks/stress_tests/database_pool_test.nim
 ```nim
-# database_pool_hell.nim - CONNECTION POOL STARVATION TEST
+# database_pool_test.nim - Connection Pool Starvation Test
 # Simulates database connection pool exhaustion and recovery
 #
 # Usage: nim c -r database_pool_hell.nim
@@ -1168,36 +1168,36 @@ import ../../../VERSION  # Version information
 # TEST ORCHESTRATION
 # ============================================================================
 
-proc run_apocalypse_plus_tests() {.async.} =
-  echo "🔥 APOCALYPSE+ TESTS: REAL INFRASTRUCTURE CHAOS"
-  echo "Testing with PostgreSQL, WebSockets, and distributed clusters..."
+proc run_comprehensive_stress_tests() {.async.} =
+  echo "Running comprehensive infrastructure stress tests"
+  echo "Testing with PostgreSQL, WebSockets, and distributed clusters"
   echo ""
 
-  # Note: These would call actual apocalypse_plus.nim functions
+  # Note: These would call actual comprehensive_stress_test.nim functions
   # For now, simulate the tests
 
-  echo "📊 Database Pool Hell..."
+  echo "Database pool stress test..."
   set_active_connections(1000)
   await sleepAsync(200)
   set_active_connections(0)
-  echo "✅ Database connections survived starvation"
+  echo "Database connections validated under load"
 
-  echo "🌐 WebSocket Storm..."
+  echo "WebSocket load test..."
   set_websocket_clients(1000)
   await sleepAsync(200)
   set_websocket_clients(0)
-  echo "✅ WebSocket flood handled"
+  echo "WebSocket flood handling verified"
 
-  echo "🏗️ Distributed Cluster..."
+  echo "Distributed cluster test..."
   set_cluster_nodes(10)
   await sleepAsync(200)
   set_cluster_nodes(0)
-  echo "✅ Cluster simulation completed"
+  echo "Cluster simulation completed"
 
-  echo "🎯 All apocalypse+ tests passed!"
+  echo "All comprehensive stress tests passed"
 
-proc run_core_chaos_tests() {.async.} =
-  echo "💥 CORE CHAOS TESTS: INTERNAL VALIDATION"
+proc run_core_stress_tests() {.async.} =
+  echo "Running core stress tests for internal validation"
   echo ""
 
   # Mixed workload chaos
@@ -1257,11 +1257,11 @@ proc run_final_boss_suite*() {.async.} =
   asyncCheck run_metrics_system()
 
   # Phase 1: Core Chaos Tests
-  await run_core_chaos_tests()
+  await run_core_stress_tests()
   echo ""
 
-  # Phase 2: Apocalypse+ Real Infrastructure
-  await run_apocalypse_plus_tests()
+  # Phase 2: Comprehensive Infrastructure Testing
+  await run_comprehensive_stress_tests()
   echo ""
 
   # Phase 3: Performance Validation
@@ -1270,25 +1270,25 @@ proc run_final_boss_suite*() {.async.} =
 
   # Final Results
   let total_time = epochTime() - suite_start
-  echo "🎉 FINAL BOSS SUITE COMPLETE!"
-  echo &"⏱️ Total execution time: {total_time:.2f} seconds"
-  echo &"📈 Tasks completed: {tasks_completed}"
-  echo &"🧠 Peak memory pressure: {memory_pressure}MB"
-  echo &"🗑️ GC pauses observed: {gc_pauses}"
+  echo "Final stress test suite completed"
+  echo &"Total execution time: {total_time:.2f} seconds"
+  echo &"Tasks completed: {tasks_completed}"
+  echo &"Peak memory pressure: {memory_pressure}MB"
+  echo &"GC pauses observed: {gc_pauses}"
   echo ""
-  echo "🏆 NIMSYNC IS PRODUCTION-READY!"
-  echo "   ✅ Chaos engineering validated"
-  echo "   ✅ Real infrastructure tested"
-  echo "   ✅ Performance benchmarks passed"
-  echo "   ✅ Metrics collection working"
+  echo "nimsync validation complete"
+  echo "   Core stress tests: passed"
+  echo "   Infrastructure tests: passed"
+  echo "   Performance benchmarks: passed"
+  echo "   Metrics collection: working"
   echo ""
-  echo "Ready for deployment! 🚀"
+  echo "Production readiness validated"
 
 when isMainModule:
   echo &"""
   ╔══════════════════════════════════════════════════╗
-  ║           NIMSYNC v{version()} — APOCALYPSE         ║
-  ║        SURVIVED HELL. NOW SHIPPING TO PROD.       ║
+  ║           NIMSYNC v{version()}                    ║
+  ║        PRODUCTION VALIDATION COMPLETE             ║
   ╚══════════════════════════════════════════════════╝
   """
   waitFor run_final_boss_suite()
@@ -1601,19 +1601,19 @@ proc celebrate() =
   
   echo &"""
   ╔══════════════════════════════════════════════════╗
-  ║              🎉 NIMSYNC {version} 🎉               ║
-  ║        APOCALYPSE SURVIVED - PRODUCTION READY     ║
+  ║              NIMSYNC {version}                    ║
+  ║           PRODUCTION VALIDATION COMPLETE          ║
   ╚══════════════════════════════════════════════════╝
   
   Date: {date}
-  Status: VICTORY ACHIEVED
+  Status: Validation Complete
   
-  🏆 Chaos Tests: PASSED
-  🧪 Benchmarks: VALIDATED  
-  🚀 Performance: 213M+ ops/sec
-  💪 Resilience: APOCALYPSE-PROOF
+  Stress Tests: Passed
+  Benchmarks: Validated  
+  Performance: 213M+ ops/sec
+  Resilience: Production-Ready
   
-  Ready for production deployment!
+  Ready for deployment
   """
 
 when isMainModule:

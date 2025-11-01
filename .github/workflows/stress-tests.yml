@@ -1,5 +1,5 @@
-# .github/workflows/apocalypse.yml
-name: Apocalypse Suite
+# .github/workflows/stress-tests.yml
+name: Stress Tests
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     branches: [ main ]
 
 jobs:
-  apocalypse:
+  stress-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -55,11 +55,11 @@ jobs:
         " &
         sleep 2
 
-    - name: Run Basic Chaos Suite
+    - name: Run Basic Stress Test Suite
       run: nim c -r tests/benchmarks/stress_tests/run_suite.nim
 
-    - name: Run Apocalypse Plus (Simulated)
-      run: timeout 300 nim c -r tests/benchmarks/stress_tests/apocalypse_plus.nim
+    - name: Run Comprehensive Stress Tests (Simulated)
+      run: timeout 300 nim c -r tests/benchmarks/stress_tests/comprehensive_stress_test.nim
       continue-on-error: true  # Allow failure for now since real deps not available
 
     - name: Generate Benchmark Report
@@ -94,7 +94,7 @@ jobs:
 
   metrics:
     runs-on: ubuntu-latest
-    needs: apocalypse
+    needs: stress-tests
     if: github.ref == 'refs/heads/main'
 
     steps:
