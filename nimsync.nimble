@@ -6,6 +6,7 @@ license       = "MIT"
 srcDir        = "src"
 
 requires "nim >= 2.0.0"
+requires "chronos >= 4.0.0"
 
 # This is a library package, no binary to build
 
