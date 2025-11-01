@@ -63,8 +63,8 @@ Modern async runtimes for systems programming require three foundational capabil
 | **Concurrency** | **Channels** | **Streams** |
 |-----------------|-------------|-------------|
 | Structured concurrency with TaskGroups | Lock-free SPSC channels | Backpressure-aware streaming |
-| Work-stealing scheduler | MPMC support (planned) | Adaptive policies |
-| Cancellation propagation | 213M+ ops/sec throughput | Zero-copy operations |
+| Work-stealing scheduler | 213M+ ops/sec throughput | Adaptive policies |
+| Cancellation propagation | Zero-copy operations | Buffer management |
 
 | **Actors** | **Scheduler** | **Observability** |
 |------------|---------------|------------------|
