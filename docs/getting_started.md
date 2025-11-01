@@ -144,14 +144,15 @@ proc main() {.async.} =
 waitFor main()
 ```
 
-### Channel Types
+### Channel Modes
+
+**v1.0.0**: Only SPSC is implemented.
 
 | Mode | Description | Use Case |
 |------|-------------|----------|
-| SPSC | Single Producer, Single Consumer | High-performance pipelines |
-| MPSC | Multiple Producers, Single Consumer | Work aggregation |
-| SPMC | Single Producer, Multiple Consumers | Work distribution |
-| MPMC | Multiple Producers, Multiple Consumers | General messaging |
+| SPSC | Single Producer, Single Consumer | Pipeline stages, dedicated threads |
+
+**Planned** (not yet available): MPSC, SPMC, MPMC modes.
 
 ## 🌊 Streams with Backpressure
 

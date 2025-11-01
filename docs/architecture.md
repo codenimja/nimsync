@@ -60,12 +60,14 @@ if chan.tryReceive(value):
 - Pre-allocate channels to avoid runtime overhead
 - Batch operations when possible
 
-## Future Extensions (v0.2.0+)
+## Future Extensions (v1.1.0+)
 
-### MPMC Channels
+### MPMC Channels (Planned)
 - Multi-producer, multi-consumer support
 - Fair scheduling algorithms
 - Backpressure handling
+
+**Status**: Not implemented in v1.0.0. Only SPSC is available.
 
 ### Select Operations
 - Channel multiplexing

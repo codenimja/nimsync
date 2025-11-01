@@ -76,14 +76,10 @@ proc processRequests(requests: seq[Request]) {.async.} =
 # High-throughput single producer/consumer
 let fastChannel = newChannel[Data](1000, ChannelMode.SPSC)  # Fastest
 
-# Multiple producers, single consumer (fan-in)
-let aggregatorChannel = newChannel[Task](500, ChannelMode.MPSC)
+# SPSC channels (only mode available in v1.0.0)
+let pipelineChannel = newChannel[Task](1024, ChannelMode.SPSC)
 
-# Single producer, multiple consumers (fan-out)
-let distributorChannel = newChannel[Work](200, ChannelMode.SPMC)
-
-# General purpose (slowest but most flexible)
-let generalChannel = newChannel[Message](100, ChannelMode.MPMC)
+# Note: MPSC, SPMC, MPMC not yet implemented
 ```
 
 #### ✅ Size Buffers Appropriately
@@ -516,13 +512,16 @@ Based on extensive testing with our comprehensive test suite:
 
 | Component | Metric | Performance | Notes |
 |-----------|--------|-------------|-------|
-| SPSC Channels | Throughput | 50M+ ops/sec | Tested with 1M+ operations |
-| MPMC Channels | Throughput | 10M+ ops/sec | Under high contention |
-| Task Groups | Spawn Rate | 500K+ tasks/sec | With 100K+ tasks |
+| Component | Metric | Target | Status |
+|-----------|--------|--------|--------|
+| SPSC Channels | Throughput | 213M+ ops/sec peak, 50-100M typical | ✅ Achieved |
+| Task Groups | Spawn Rate | 500K+ tasks/sec | Tested with 100K+ tasks |
 | Cancellation | Rate | 100K+ ops/sec | High frequency scenarios |
 | Select Operations | Throughput | 1M+ ops/sec | With 50+ channels |
 | Memory Usage | Per Channel | <1KB | Linear growth verified |
 | Concurrent Workers | Operations | 50+ workers | Stability tested |
+
+**Note**: MPMC channels not implemented in v1.0.0.
 
 ### Stress Test Results
 
