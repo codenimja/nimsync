@@ -37,7 +37,7 @@ Validate behavior under extreme conditions and edge cases.
 
 | Test | Scenario | Success Criteria |
 |------|----------|------------------|
-| **Concurrent Access** | 10 channels × 10K ops | Maintains >30M ops/sec |
+| **Concurrent Access** | 10 SPSC channels × 10K ops | Maintains >30M ops/sec aggregate |
 | **IO Simulation** | Network load patterns | High throughput maintained |
 | **Contention** | Multi-producer/consumer | Graceful degradation |
 | **Backpressure** | Buffer overflow (16-slot) | Fair scheduling |
@@ -175,10 +175,10 @@ echo 1 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
 Simulates real-world concurrent channel usage:
 
 ```nim
-- 10 SPSC channels
+- 10 concurrent SPSC channels
 - 10,000 operations per channel
 - Measures aggregate throughput
-- Target: > 30M ops/sec sustained
+- Target: > 30M ops/sec sustained (aggregate across all channels)
 ```
 
 ### IO-Bound Simulation
