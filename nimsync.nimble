@@ -1,17 +1,19 @@
 # nimsync.nimble
 version       = "1.0.0"
 author        = "boonzy"
-description   = "Apocalypse-proof async runtime with 213M+ ops/sec channels"
+description   = "High-performance async runtime with 213M+ ops/sec channels"
 license       = "MIT"
 srcDir        = "src"
 
 requires "nim >= 2.0.0"
 
-task test, "Run all tests":
-  exec "nim c -r --threads:on --mm:orc tests/unit/test_channel.nim"
+# This is a library package, no binary to build
 
-task bench, "Run performance benchmark":
-  exec "nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim && ./tests/performance/benchmark_spsc"
+task test, "Run all tests":
+  exec "./scripts/test.sh full"
+
+task bench, "Run performance benchmarks":
+  exec "./scripts/run_all_benchmarks.sh"
 
 task fmt, "Format source code":
   exec "nimpretty --backup:off src"
@@ -20,8 +22,8 @@ task fmt, "Format source code":
 
 task lint, "Run static analysis and checks":
   exec "nim check --hints:off src/nimsync.nim"
-  exec "nim check --hints:off tests/test_basic.nim"
-  exec "nim check --hints:off tests/test_core.nim"
+  exec "nim check --hints:off tests/unit/test_basic.nim"
+  exec "nim check --hints:off tests/unit/test_simple_core.nim"
   exec "nim check --hints:off examples/hello/main.nim"
 
 task clean, "Clean build artifacts":
@@ -33,13 +35,12 @@ task clean, "Clean build artifacts":
   exec "find . -name '*.so' -delete"
   exec "find . -name '*.dylib' -delete"
 
-task build, "Build the library":
-  exec "nim c --noMain --app:lib src/nimsync.nim"
+task build, "Build the library (no-op for library package)":
+  echo "nimsync is a library package. Use 'nimble install' to install it or build examples directly."
 
-task buildRelease, "Build optimized release":
-  exec "nim c -d:release --opt:speed --noMain --app:lib src/nimsync.nim"
+task buildRelease, "Build optimized release (no-op for library package)":
+  echo "nimsync is a library package. Use 'nimble install' to install it or build examples directly."
 
 task ci, "Run CI checks":
   exec "nimble test"
   exec "nimble lint"
-  exec "nimble docs"

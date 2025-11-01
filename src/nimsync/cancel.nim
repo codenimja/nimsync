@@ -28,17 +28,17 @@ type
 type
   CancelState* {.pure.} = enum
     ## Cancellation states with atomic semantics
-    Active = 0      ## Scope is active, not cancelled
-    Cancelled = 1   ## Scope has been cancelled
-    Completed = 2   ## Scope completed normally
+    Active = 0    ## Scope is active, not cancelled
+    Cancelled = 1 ## Scope has been cancelled
+    Completed = 2 ## Scope completed normally
 
   CancelReason* {.pure.} = enum
     ## Reasons for cancellation
-    Manual = "manual"           ## Explicitly cancelled by user
-    Timeout = "timeout"         ## Cancelled due to timeout
-    ParentCancel = "parent"     ## Cancelled by parent scope
-    TaskError = "task_error"    ## Cancelled due to task error
-    ResourceLimit = "resource"  ## Cancelled due to resource limits
+    Manual = "manual"          ## Explicitly cancelled by user
+    Timeout = "timeout"        ## Cancelled due to timeout
+    ParentCancel = "parent"    ## Cancelled by parent scope
+    TaskError = "task_error"   ## Cancelled due to task error
+    ResourceLimit = "resource" ## Cancelled due to resource limits
 
   CancelScope* = object
     ## High-performance cancellation scope
@@ -51,14 +51,14 @@ type
     ## - Shield protection
     state: Atomic[CancelState]
     reason: CancelReason
-    children: seq[ptr CancelScope]  # Weak references to child scopes
-    parent: ptr CancelScope         # Weak reference to parent
-    shielded: bool                  # Protection from parent cancellation
-    deadline: Option[MonoTime]      # Optional timeout deadline
-    cancelTime: MonoTime           # When cancellation occurred
+    children: seq[ptr CancelScope] # Weak references to child scopes
+    parent: ptr CancelScope # Weak reference to parent
+    shielded: bool # Protection from parent cancellation
+    deadline: Option[MonoTime] # Optional timeout deadline
+    cancelTime: MonoTime # When cancellation occurred
     when defined(debug):
-      name: string                 # Debug name for the scope
-      stackTrace: string           # Creation stack trace
+      name: string # Debug name for the scope
+      stackTrace: string # Creation stack trace
 
   CancelToken* = object
     ## Lightweight cancellation token for checking
@@ -109,15 +109,18 @@ proc cancelled*(scope: CancelScope): bool {.inline.} =
   ## Check if scope is cancelled (ultra-fast path)
   ##
   ## Performance: ~5-10ns on modern hardware
-  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moAcquire) == CancelState.Cancelled
+  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moAcquire) ==
+      CancelState.Cancelled
 
 proc completed*(scope: CancelScope): bool {.inline.} =
   ## Check if scope completed normally
-  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moAcquire) == CancelState.Completed
+  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moAcquire) ==
+      CancelState.Completed
 
 proc active*(scope: CancelScope): bool {.inline.} =
   ## Check if scope is still active
-  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moAcquire) == CancelState.Active
+  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moAcquire) ==
+      CancelState.Active
 
 {.pop.}
 
@@ -228,7 +231,8 @@ proc withCancelScope*(body: proc(scope: var CancelScope)) =
       discard scopeStack.pop()
 
 # Async-aware cancellation scope
-proc withCancelScope*(body: proc(scope: var CancelScope): Future[void] {.async.}): Future[void] {.async.} =
+proc withCancelScope*(body: proc(scope: var CancelScope): Future[
+    void] {.async.}): Future[void] {.async.} =
   ## Async version of withCancelScope
   ##
   ## Provides the same RAII semantics but works with async procedures
@@ -243,7 +247,8 @@ proc withCancelScope*(body: proc(scope: var CancelScope): Future[void] {.async.}
       discard scopeStack.pop()
 
 # Timeout integration
-proc withTimeout*[T](duration: chronos.Duration, body: proc(): Future[T] {.async.}): Future[T] {.async.} =
+proc withTimeout*[T](duration: chronos.Duration, body: proc(): Future[
+    T] {.async.}): Future[T] {.async.} =
   ## Execute async operation with timeout
   ##
   ## This creates a cancellation scope with a timeout timer.
@@ -298,7 +303,8 @@ proc withTimeout*[T](duration: chronos.Duration, body: proc(): Future[T] {.async
     if scopeStack.len > 0 and scopeStack[^1] == addr scope:
       discard scopeStack.pop()
 
-proc withDeadline*[T](deadline: MonoTime, body: proc(): Future[T] {.async.}): Future[T] {.async.} =
+proc withDeadline*[T](deadline: MonoTime, body: proc(): Future[
+    T] {.async.}): Future[T] {.async.} =
   ## Execute async operation with absolute deadline
   ##
   ## Similar to withTimeout but uses an absolute deadline
@@ -445,4 +451,5 @@ template fastCancelCheck*(scope: CancelScope): bool =
   ## This bypasses some safety checks for maximum performance
   ## Only use in performance-critical code where you're certain
   ## the scope is valid
-  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moRelaxed) == CancelState.Cancelled
+  cast[ptr Atomic[CancelState]](unsafeAddr scope.state)[].load(moRelaxed) ==
+      CancelState.Cancelled

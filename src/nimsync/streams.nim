@@ -28,9 +28,9 @@ type
 
   StreamState* {.pure.} = enum
     ## Stream lifecycle states
-    Active = 0      ## Stream is active and flowing
-    Closed = 1      ## Stream closed gracefully
-    Error = 2       ## Stream in error state
+    Active = 0       ## Stream is active and flowing
+    Closed = 1       ## Stream closed gracefully
+    Error = 2        ## Stream in error state
     Backpressure = 3 ## Stream experiencing backpressure
 
   StreamBuffer*[T] = object
@@ -154,7 +154,7 @@ proc push*[T](buffer: var StreamBuffer[T], item: sink T): bool =
     return false
 
   let writePos = buffer.writePos.load(moRelaxed)
-  let nextWritePos = (writePos + 1) and (buffer.capacity - 1)  # Power of 2 optimization
+  let nextWritePos = (writePos + 1) and (buffer.capacity - 1) # Power of 2 optimization
 
   # Store item
   buffer.data[writePos] = item
@@ -182,7 +182,7 @@ proc pop*[T](buffer: var StreamBuffer[T]): Option[T] =
     return none(T)
 
   let readPos = buffer.readPos.load(moRelaxed)
-  let nextReadPos = (readPos + 1) and (buffer.capacity - 1)  # Power of 2 optimization
+  let nextReadPos = (readPos + 1) and (buffer.capacity - 1) # Power of 2 optimization
 
   # Load item
   let item = buffer.data[readPos]
@@ -193,7 +193,8 @@ proc pop*[T](buffer: var StreamBuffer[T]): Option[T] =
 
   return some(item)
 
-proc batchPop*[T](buffer: var StreamBuffer[T], dest: var openArray[T], maxItems: int = -1): int =
+proc batchPop*[T](buffer: var StreamBuffer[T], dest: var openArray[T],
+    maxItems: int = -1): int =
   ## High-performance batch pop for reduced overhead
   ##
   ## Returns number of items actually popped
@@ -577,7 +578,7 @@ when defined(simd) and (defined(amd64) or defined(i386)):
     var total: T = 0.0
 
     while true:
-      let batch = await stream.receiveBatch(16)  # SIMD width
+      let batch = await stream.receiveBatch(16)           # SIMD width
       if batch.len == 0:
         break
 

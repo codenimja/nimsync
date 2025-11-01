@@ -16,13 +16,13 @@ import ./errors
 type
   ## Backpressure policy mode
   BackpressureMode* = enum
-    Disabled      ## No flow control
-    Block         ## Block on full (original)
-    Drop          ## Drop when full
-    Overflow      ## Use overflow buffer
-    Credits       ## Credit-based flow control
-    Adaptive      ## Adaptive with latency feedback
-    Predictive    ## ML-based demand forecasting
+    Disabled   ## No flow control
+    Block      ## Block on full (original)
+    Drop       ## Drop when full
+    Overflow   ## Use overflow buffer
+    Credits    ## Credit-based flow control
+    Adaptive   ## Adaptive with latency feedback
+    Predictive ## ML-based demand forecasting
 
   ## Credit-based flow control state
   CreditState* = ref object
@@ -74,12 +74,14 @@ type
     congestionStartTime*: int64
 
 ## Create credit-based flow control state
-proc newCreditState*(totalCredits: int = 1000, refreshIntervalMs: int = 100): CreditState =
+proc newCreditState*(totalCredits: int = 1000,
+    refreshIntervalMs: int = 100): CreditState =
   CreditState(
     senderCredits: totalCredits,
     receiverCredits: totalCredits,
     totalCredits: totalCredits,
-    lastRefreshTime: (getTime().toUnix * 1_000_000_000 + getTime().nanosecond).int64,
+    lastRefreshTime: (getTime().toUnix * 1_000_000_000 + getTime(
+    ).nanosecond).int64,
     refreshInterval: refreshIntervalMs.int64 * 1_000_000
   )
 
@@ -118,8 +120,8 @@ proc newAdaptiveRateLimiter*(targetRate: float = 10000.0,
     congestionWindow: initialWindow,
     rttMin: float.high,
     rttMax: 0.0,
-    decreaseFactor: 0.8,  # MIAD: multiplicative decrease
-    increasePerCycle: 1,  # MIAD: additive increase
+    decreaseFactor: 0.8, # MIAD: multiplicative decrease
+    increasePerCycle: 1, # MIAD: additive increase
     lastAdjustmentTime: getTime().toUnixNanos()
   )
 
@@ -142,7 +144,7 @@ proc recordLatency*(limiter: AdaptiveRateLimiter, latencyNs: int64) =
   atomicStore(addr limiter.latencyEma, newEma)
 
   # Adapt congestion window (MIAD)
-  let targetLatency = 100.0 * 1_000_000  # 100ms target
+  let targetLatency = 100.0 * 1_000_000 # 100ms target
   let currentWindow = atomicLoad(addr limiter.congestionWindow)
 
   if newEma > targetLatency:
@@ -175,10 +177,12 @@ proc newCongestionDetector*(queueThreshold: int = 1000,
   )
 
 ## Update queue depth and detect congestion
-proc updateQueueDepth*(detector: CongestionDetector, depth: int, latencyNs: int64) =
+proc updateQueueDepth*(detector: CongestionDetector, depth: int,
+    latencyNs: int64) =
   atomicStore(addr detector.currentQueueDepth, depth)
 
-  let exceeds = depth > detector.queueDepthThreshold or latencyNs > detector.latencyThreshold
+  let exceeds = depth > detector.queueDepthThreshold or latencyNs >
+      detector.latencyThreshold
   let wasCongested = atomicLoad(addr detector.isCongested)
 
   if exceeds and not wasCongested:
@@ -225,7 +229,7 @@ proc canSend*(backpressure: AdaptiveBackpressure, queueDepth: int = 0): bool =
   of Disabled:
     true
   of Block, Drop, Overflow:
-    true  # Let channel handle it
+    true # Let channel handle it
   of Credits:
     consumeCredit(backpressure.credits)
   of Adaptive:
@@ -243,12 +247,13 @@ proc onProcessed*(backpressure: AdaptiveBackpressure, latencyNs: int64) =
   recordLatency(backpressure.limiter, latencyNs)
 
 ## Update congestion state
-proc updateCongestion*(backpressure: AdaptiveBackpressure, queueDepth: int, latencyNs: int64) =
+proc updateCongestion*(backpressure: AdaptiveBackpressure, queueDepth: int,
+    latencyNs: int64) =
   updateQueueDepth(backpressure.detector, queueDepth, latencyNs)
 
   # Adaptive mode switching
   let now = getTime().toUnixNanos()
-  if now - backpressure.lastModeSwitch > 1_000_000_000:  # 1 second
+  if now - backpressure.lastModeSwitch > 1_000_000_000: # 1 second
     if isCongested(backpressure.detector):
       # Switch to more aggressive backpressure
       if backpressure.mode != Credits:

@@ -134,7 +134,7 @@ proc defaultRestartPolicy*(): RestartPolicy =
   )
 
 ## Create default supervision config
-proc defaultSupervi sionConfig*(): SupervisionConfig =
+proc defaultSupervisionConfig*(): SupervisionConfig =
   SupervisionConfig(
     strategy: OneForOne,
     restartPolicy: defaultRestartPolicy(),
