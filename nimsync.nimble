@@ -1,7 +1,7 @@
 # nimsync.nimble
 version       = "1.0.0"
 author        = "boonzy"
-description   = "High-performance async runtime with 213M+ ops/sec channels"
+description   = "High-performance async runtime for Nim"
 license       = "MIT"
 srcDir        = "src"
 
