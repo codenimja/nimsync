@@ -9,7 +9,7 @@ nimsync is a high-performance async runtime that brings structured concurrency, 
 ### Key Features
 
 - **Structured Concurrency** - TaskGroups ensure proper cleanup
-- **High-Performance Channels** - 50M+ msgs/sec, lock-free SPSC/MPMC
+- **High-Performance Channels** - 213M+ msgs/sec peak (SPSC only in v1.0.0)
 - **Backpressure-Aware Streams** - Memory-safe data flow
 - **Lightweight Actors** - Stateful concurrent entities
 - **Robust Cancellation** - Hierarchical timeout management
@@ -158,11 +158,12 @@ make clean           # Clean build artifacts
 | Component | Metric | Performance |
 |-----------|--------|-------------|
 | TaskGroup | Spawn overhead | <100ns |
-| SPSC Channel | Throughput | 50M msgs/sec |
-| MPMC Channel | Throughput | 30M msgs/sec |
+| SPSC Channel | Throughput | 213M msgs/sec peak, 50-100M typical |
 | Stream | Backpressure latency | <200ns |
 | Actor | Message latency | <50ns |
 | Cancellation | Check overhead | <10ns |
+
+**Note**: Only SPSC channels are implemented in v1.0.0. MPMC is not available.
 
 ## 🧩 **Architecture Overview**
 

@@ -4,9 +4,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
 
-**Production-ready async runtime for Nim featuring structured concurrency, 213M+ ops/sec lock-free channels, and work-stealing scheduler**
+**Async runtime for Nim with structured concurrency, lock-free SPSC channels (213M+ ops/sec peak), and work-stealing scheduler**
 
-> **nimsync** provides three core primitives for building high-performance concurrent applications: **TaskGroups** for structured concurrency, **Channels** for lock-free message passing, and **Streams** for backpressure-aware data processing.
+> **nimsync** provides three core primitives for building high-performance concurrent applications: **TaskGroups** for structured concurrency, **Channels** (SPSC-only) for lock-free message passing, and **Streams** for backpressure-aware data processing.
+> 
+> **Performance Note**: The 213M ops/sec figure is peak throughput on bare metal (AMD 7950X) with CPU pinning, `--d:danger`, and zero GC pressure. Real-world applications typically see 50-100M ops/sec, which is still exceptional.
 
 ## Table of Contents
 
@@ -56,7 +58,9 @@ Modern async runtimes for systems programming require three foundational capabil
 2. **Efficient Message Passing**: Lock-free channels that scale to 200M+ operations per second with predictable latency
 3. **Backpressure Management**: Adaptive flow control preventing memory exhaustion under load
 
-**nimsync** is Nim's first async runtime providing all three primitives with zero-cost abstractions and ORC memory safety. Built on Chronos, it extends async/await with production-grade concurrency patterns proven in Rust (Tokio) and Go.
+**nimsync** provides all three primitives with ORC memory safety. Built on Chronos, it extends async/await with concurrency patterns from Rust (Tokio) and Go.
+
+**Current Limitations**: Only SPSC (Single Producer Single Consumer) channels are implemented. MPMC support is planned but not available in v1.0.0.
 
 ## Features
 
@@ -75,7 +79,7 @@ Modern async runtimes for systems programming require three foundational capabil
 | **Fault Tolerance** | **Core** |
 |--------------------|---------| 
 | Error isolation | ORC-safe memory model |
-| Automatic restarts | Zero-cost abstractions |
+| Automatic restarts | Minimal overhead design |
 | Health monitoring | Thread-safe operations |
 
 ## Installation
@@ -104,9 +108,9 @@ nimble install
 
 ### Requirements
 
-- **Nim**: 2.0.0+
-- **Chronos**: 4.0.4+
-- **Platforms**: Linux, macOS, Windows
+- **Nim**: 2.0.0+ (required - Nim 1.6.x has Chronos stream compatibility issues)
+- **Chronos**: 4.0.0+
+- **Platforms**: Linux (tested), macOS/Windows (untested)
 
 ## Quick Start
 
@@ -207,18 +211,18 @@ proc main() {.async.} =
 
 ### Channels
 
-Lock-free message passing with backpressure support:
+Lock-free SPSC (Single Producer Single Consumer) message passing:
 
 ```nim
-# SPSC (Single Producer Single Consumer)
-let spscChan = newChannel[string](1024, ChannelMode.SPSC)
+# Create SPSC channel
+let chan = newChannel[string](1024, ChannelMode.SPSC)
 
 # Non-blocking operations
-if spscChan.trySend("message"):
+if chan.trySend("message"):
   echo "Sent successfully"
 
 var value: string
-if spscChan.tryReceive(value):
+if chan.tryReceive(value):
   echo "Received: ", value
 
 # Async operations with select
@@ -231,7 +235,9 @@ select:
     echo "Timeout reached"
 ```
 
-**Performance**: 213M+ ops/sec (SPSC), lock-free atomic operations
+**Performance**: 213M+ ops/sec peak (bare metal, CPU pinning, `--d:danger`), 50-100M ops/sec typical real-world throughput
+
+**Note**: Only SPSC mode is implemented in v1.0.0. MPMC is not yet available.
 
 ### Streams
 

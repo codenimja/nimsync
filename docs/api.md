@@ -32,13 +32,21 @@ await taskGroup(TaskPolicy.IgnoreErrors):  # Continue despite errors
 
 Channels provide type-safe, lock-free message passing between tasks.
 
-```nim
-# Channel modes
-let spsc = initChannel[T](size, ChannelMode.SPSC)  # Single producer, single consumer (fastest)
-let mpsc = initChannel[T](size, ChannelMode.MPSC)  # Multi producer, single consumer
-let mpmc = initChannel[T](size, ChannelMode.MPMC)  # Multi producer, multi consumer
+**v1.0.0 Limitation**: Only SPSC (Single Producer Single Consumer) mode is implemented.
 
-# Usage
+```nim
+# Create SPSC channel
+let chan = initChannel[int](1024, ChannelMode.SPSC)
+
+# Non-blocking operations
+if chan.trySend(42):
+  echo "Sent"
+
+var value: int
+if chan.tryReceive(value):
+  echo "Received: ", value
+
+# Async operations
 await chan.send(value)
 let value = await chan.recv()
 chan.close()
@@ -46,12 +54,14 @@ chan.close()
 
 **Parameters:**
 - `T`: Message type
-- `size`: Buffer capacity
-- `mode`: Channel mode (`SPSC`, `MPSC`, `SPMC`, `MPMC`)
+- `size`: Buffer capacity (rounded up to power of 2)
+- `mode`: Must be `ChannelMode.SPSC` in v1.0.0
 
 **Methods:**
-- `send(value: T)`: Send a message
-- `recv(): Future[T]`: Receive a message
+- `trySend(value: T): bool`: Non-blocking send
+- `tryReceive(var value: T): bool`: Non-blocking receive
+- `send(value: T)`: Async send (future support)
+- `recv(): Future[T]`: Async receive (future support)
 - `close()`: Close the channel
 
 ### Cancellation - Timeout & Scope Management

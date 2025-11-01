@@ -1,13 +1,19 @@
 ## nimsync — High-performance Channels
 ##
-## Lock-free MPMC channels with backpressure support and fair select operations
+## Lock-free SPSC channels with atomic operations
+##
+## **v1.0.0 Limitation**: Only SPSC (Single Producer Single Consumer) is implemented.
+## MPSC, SPMC, and MPMC modes are defined but not yet functional.
 
 import std/[atomics, times]
 import chronos
 
 type
   ChannelMode* = enum
-    SPSC, MPSC, SPMC, MPMC
+    SPSC  ## Single Producer Single Consumer (implemented)
+    MPSC  ## Multi Producer Single Consumer (NOT implemented - raises error)
+    SPMC  ## Single Producer Multi Consumer (NOT implemented - raises error)
+    MPMC  ## Multi Producer Multi Consumer (NOT implemented - raises error)
 
   SPSCSlot[T] = object
     value: T
@@ -29,6 +35,14 @@ type
     capacity: int
 
 proc newChannel*[T](size: int, mode: ChannelMode): Channel[T] =
+  ## Create a new channel with the specified capacity and mode.
+  ## 
+  ## **v1.0.0**: Only SPSC mode is implemented. Other modes will raise an error.
+  
+  if mode != SPSC:
+    raise newException(ValueError, 
+      "Only SPSC mode is implemented in v1.0.0. MPSC/SPMC/MPMC are not available.")
+  
   # Round up to power of 2 for mask optimization
   var actualSize = 1
   while actualSize < size:
@@ -43,9 +57,8 @@ proc newChannel*[T](size: int, mode: ChannelMode): Channel[T] =
     result.head.store(0)
     result.tail.store(0)
   else:
-    result.queue = newSeq[T](actualSize)
-    result.queueHead = 0
-    result.queueTail = 0
+    # This should never be reached due to the check above
+    discard
 
 proc send*[T](c: Channel[T], value: T): Future[void] {.async.} =
   while c.queue.len >= c.capacity:

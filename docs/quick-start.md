@@ -33,10 +33,12 @@ let msg = await stream.receive()
 
 ## Performance Targets
 
-- **Channels**: >50M msgs/sec (SPSC), >10M msgs/sec (MPMC)
+- **Channels (SPSC only)**: 213M msgs/sec peak (bare metal + tuning), 50-100M typical
 - **Task spawning**: <100ns overhead
 - **Cancellation**: <10ns checking
 - **Streams**: >1M items/sec with backpressure
+
+**Note**: MPMC channels are not implemented in v1.0.0.
 
 ## Build for Performance
 
