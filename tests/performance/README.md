@@ -5,15 +5,21 @@ Official benchmark suite following industry best practices from Tokio, Go, and R
 ## Quick Start
 
 ```bash
-# Run all benchmarks
+# Run all SPSC benchmarks
 ./tests/performance/run_all_benchmarks.sh
 
-# Or run individually
+# Run MPSC benchmarks
+nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_mpsc.nim
+./tests/performance/benchmark_mpsc
+
+# Or run SPSC benchmarks individually
 nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_latency.nim
 ./tests/performance/benchmark_latency
 ```
 
 ## Benchmark Suite
+
+## SPSC Benchmarks (Single Producer Single Consumer)
 
 ### 1. benchmark_spsc_simple.nim - Throughput (Baseline)
 **What it measures**: Raw SPSC channel throughput  
@@ -114,6 +120,32 @@ nim c -r tests/performance/benchmark_concurrent.nim
 
 **Key insight**: Channel itself is 600M+ ops/sec, async wrapper adds polling overhead
 
+## MPSC Benchmarks (Multi-Producer Single Consumer)
+
+### 8. benchmark_mpsc.nim - Multi-Producer Performance
+**What it measures**: MPSC channel throughput, latency, and scalability
+**Industry reference**: JCTools MPSC queue benchmarking, Disruptor patterns
+**Results**: 16M ops/sec (2 producers), 9M ops/sec (4 producers), wait-free algorithm
+**Use case**: Concurrent producer scenarios (worker threads, event aggregation)
+
+```bash
+nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_mpsc.nim
+./tests/performance/benchmark_mpsc
+```
+
+**Benchmark suite includes**:
+- **Throughput comparison**: SPSC vs MPSC with 1/2/4/8 producers
+- **Latency measurement**: Average latency across different producer counts
+- **Scalability analysis**: Fixed items per producer, measuring scalability
+- **Size impact**: Performance across buffer sizes (64/256/1024/4096)
+- **Burst workload**: Handling bursty traffic patterns
+
+**Key findings**:
+- **2 producers**: Optimal sweet spot (16M ops/sec)
+- **Wait-free algorithm**: No CAS retry loops, predictable latency
+- **Stress tested**: 1M items across 8 producers (5.65M ops/sec)
+- **Latency stability**: 96-117ns across 1-4 producers
+
 ## Design Principles
 
 ✅ **Non-redundant**: Each benchmark measures a different aspect  
@@ -126,11 +158,12 @@ nim c -r tests/performance/benchmark_concurrent.nim
 
 | Category | Benchmarks | Purpose |
 |----------|-----------|---------|
-| **Throughput** | simple, concurrent | Raw performance numbers |
-| **Latency** | latency | Tail latency analysis |
-| **Stability** | burst, sustained | Real-world behavior |
-| **Tuning** | sizes | Optimization guidance |
-| **Limits** | stress | Breaking point analysis |
+| **Throughput** | simple, concurrent, mpsc | Raw performance numbers |
+| **Latency** | latency, mpsc | Tail latency analysis |
+| **Stability** | burst, sustained, mpsc | Real-world behavior |
+| **Tuning** | sizes, mpsc | Optimization guidance |
+| **Limits** | stress, mpsc | Breaking point analysis |
+| **Scalability** | mpsc | Multi-producer scaling |
 
 ## CI Integration
 
