@@ -1,16 +1,4 @@
-# Benchmarks Location
-
-## Official Benchmarks
-
-**All benchmark implementations have been moved to:**
-👉 **https://github.com/codenimja/nimsync-benchmarks**
-
-The separate repository provides:
-- ✅ Community-driven benchmark contributions
-- ✅ Continuous CI validation
-- ✅ Performance regression tracking
-- ✅ Cross-platform benchmark results
-- ✅ Detailed methodology documentation
+# Benchmarks
 
 ## What's Here
 
@@ -47,7 +35,6 @@ nim c -r memory_pressure_test.nim
 
 ## Contributing Benchmarks
 
-To contribute performance benchmarks or comparative studies, please submit PRs to:
-**https://github.com/codenimja/nimsync-benchmarks**
+To contribute performance benchmarks or comparative studies, please submit PRs to this repository.
 
-See the [CONTRIBUTING.md](https://github.com/codenimja/nimsync-benchmarks/blob/main/CONTRIBUTING.md) guide for benchmark submission requirements.
+See the main [CONTRIBUTING.md](../../docs/CONTRIBUTING.md) for contribution guidelines.

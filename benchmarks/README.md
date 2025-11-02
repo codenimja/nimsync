@@ -2,8 +2,6 @@
 
 Official performance benchmarks for nimsync. All results are reproducible and verified in CI.
 
-> **📊 See also**: [nimsync-benchmarks](https://github.com/codenimja/nimsync-benchmarks) repository for community-driven performance comparisons with other frameworks.
-
 ## Quick Links
 
 - **🏃 [Run Benchmarks](#running-benchmarks)** - 5-minute verification
