@@ -222,17 +222,17 @@ MIT License - see LICENSE for details.
 
 ---
 
-**Status**: v0.2.1 is honest software. Claims only what's verified (SPSC channels). Documents what's experimental (everything else). Provides roadmap for v1.0.0 when features actually work.
+**Status**: Production-ready SPSC channels with comprehensive validation. Other features (TaskGroup, MPSC, actors) are experimental - see [GitHub Issues](.github/) for contributor opportunities.
 
 ---
 
 ## Disclaimer
 
-**nimsync v0.2.1 is research-quality software with one production-ready feature.**
+**nimsync v1.0.0 is production-ready for SPSC channels.**
 
-✅ **SPSC channels are real** - 212M+ ops/sec verified, use in production
-❌ **Everything else is experimental** - incomplete, buggy, or fake
+✅ **SPSC channels verified** - 615M ops/sec peak, 31ns P99 latency, 7-benchmark suite validation  
+⚠️ **Experimental features** - TaskGroup, MPSC, actors not yet production-ready ([help wanted](.github/))
 
-We document bugs openly. We don't hide incomplete features. We're honest about what works.
+We document performance honestly. We benchmark rigorously. We're transparent about limitations.
 
-**This is not corporate software.** It's a solo developer's work-in-progress. Expectations should match reality.
+**Open source async runtime built with Nim.** Contributions welcome - see issues for high-impact areas.
