@@ -4,13 +4,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
 
-**Lock-free SPSC channels for Nim achieving 212M+ ops/sec**
+**Lock-free SPSC channels for Nim with verifiable performance**
 
-Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) channels with world-class performance. This is verified, tested, real code.
+Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) channels. Performance ranges from 20M-600M+ ops/sec depending on hardware and benchmark type. This is verified, tested, real code.
 
 ## Features
 
-- **212M+ ops/sec** peak throughput (verified on AMD 7950X)
+- **High throughput**: 600M+ ops/sec (simple), 50M-200M ops/sec (multi-threaded)
+- **Verifiable**: Run benchmarks yourself in 5 minutes
 - Lock-free ring buffer with atomic operations
 - Zero GC pressure with ORC memory management
 - Cache-line aligned (64 bytes) to prevent false sharing
