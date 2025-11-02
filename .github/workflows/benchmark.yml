@@ -1,0 +1,116 @@
+name: Continuous Benchmarking
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run benchmarks daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  benchmark:
+    name: Benchmark on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        nim-version: ['stable', 'devel']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Nim
+      uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: ${{ matrix.nim-version }}
+
+    - name: Install dependencies
+      run: nimble install -y
+
+    - name: Collect system info
+      id: sysinfo
+      run: |
+        echo "os=$(uname -s)" >> $GITHUB_OUTPUT
+        echo "arch=$(uname -m)" >> $GITHUB_OUTPUT
+        echo "cpu=$(lscpu | grep 'Model name' | cut -d':' -f2 | xargs || echo 'unknown')" >> $GITHUB_OUTPUT
+        echo "cores=$(nproc || sysctl -n hw.ncpu)" >> $GITHUB_OUTPUT
+        echo "nim_version=$(nim --version | head -n1)" >> $GITHUB_OUTPUT
+        echo "timestamp=$(date -u +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+
+    - name: Build SPSC benchmark
+      run: |
+        nim c -d:danger --opt:speed --mm:orc \
+          --out:benchmark_spsc_simple tests/performance/benchmark_spsc_simple.nim
+
+    - name: Run SPSC benchmark
+      id: run_benchmark
+      run: |
+        echo "Starting SPSC benchmark..."
+        ./benchmark_spsc_simple | tee benchmark_results.txt
+
+        # Extract peak throughput
+        THROUGHPUT=$(grep "Peak Throughput:" benchmark_results.txt | grep -oP '[0-9,]+' | head -1 || echo "0")
+        echo "throughput=$THROUGHPUT" >> $GITHUB_OUTPUT
+
+    - name: Create benchmark report
+      run: |
+        cat > benchmark_report.md <<EOF
+        # Benchmark Results
+
+        **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        **Run ID**: ${{ github.run_id }}
+        **Commit**: ${{ github.sha }}
+
+        ## System Information
+        - **OS**: ${{ steps.sysinfo.outputs.os }} (${{ matrix.os }})
+        - **Architecture**: ${{ steps.sysinfo.outputs.arch }}
+        - **CPU**: ${{ steps.sysinfo.outputs.cpu }}
+        - **Cores**: ${{ steps.sysinfo.outputs.cores }}
+        - **Nim Version**: ${{ matrix.nim-version }}
+
+        ## SPSC Channel Performance
+
+        \`\`\`
+        $(cat benchmark_results.txt)
+        \`\`\`
+
+        ## Verification
+
+        To reproduce these results:
+        \`\`\`bash
+        git clone https://github.com/codenimja/nimsync.git
+        cd nimsync
+        git checkout ${{ github.sha }}
+        nimble install -y
+        nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_spsc_simple.nim
+        ./tests/performance/benchmark_spsc_simple
+        \`\`\`
+
+        ---
+        *This benchmark was run automatically by GitHub Actions*
+        EOF
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results-${{ matrix.os }}-${{ matrix.nim-version }}-${{ steps.sysinfo.outputs.timestamp }}
+        path: |
+          benchmark_results.txt
+          benchmark_report.md
+        retention-days: 90
+
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('benchmark_report.md', 'utf8');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });

@@ -103,19 +103,35 @@ proc isFull[T](channel: Channel[T]): bool
 
 ## Benchmarks
 
-Verified performance on Linux x86_64, Nim 2.2.4, AMD 7950X:
+**Performance varies by hardware and benchmark type.** Results from simple single-threaded benchmark (Linux x86_64, Nim 2.2.4):
 
 | Metric | Performance |
 |--------|-------------|
-| Peak throughput | 212,465,682 ops/sec |
+| Peak throughput | 600M+ ops/sec |
+| Average throughput | 593M+ ops/sec |
 | Memory per channel | < 1KB |
-| Operation latency | < 100ns |
+| Operation latency | ~1.7 ns/op |
+
+*Multi-threaded benchmarks show 50M-200M ops/sec due to thread synchronization overhead. Your results will vary.*
 
 ### Run Yourself
 ```bash
+# Simple benchmark (fastest)
+nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_spsc_simple.nim
+./tests/performance/benchmark_spsc_simple
+
+# Multi-threaded benchmark (more realistic)
 nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim
 ./tests/performance/benchmark_spsc
 ```
+
+### Third-Party Verification
+
+Want to verify these claims yourself?
+
+- **Reproduction Guide**: See [BENCHMARKING.md](BENCHMARKING.md) for step-by-step instructions
+- **CI Benchmarks**: Automatic benchmarks on every commit → [GitHub Actions](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)
+- **Expected Range**: 20M-600M ops/sec depending on CPU, benchmark type, and system load
 
 ## Limitations
 
