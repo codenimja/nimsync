@@ -12,7 +12,7 @@ Implement production-ready MPSC (Multi-Producer Single-Consumer) channels to ena
 Current SPSC (Single-Producer Single-Consumer) channels work great for:
 - ✅ Pipeline stages (one producer → one consumer)
 - ✅ Thread-to-thread communication
-- ✅ Lock-free performance (615M ops/sec)
+- ✅ Lock-free performance (558M ops/sec micro, ~35M realistic)
 
 But many real-world patterns need multiple producers:
 - ❌ Multiple workers → single aggregator

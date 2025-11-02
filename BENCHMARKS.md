@@ -181,8 +181,10 @@ Benchmarks run automatically on every commit:
 ## 📊 Interpreting Results
 
 ### Throughput (ops/sec)
-- **615M**: Raw performance ceiling
-- **300M+**: Excellent under real workloads
+- **558M**: Raw SPSC micro-benchmark ceiling
+- **35M**: Realistic SPSC threaded performance
+- **15M**: MPSC with 2 producers
+- **385M+**: Excellent under burst workloads
 - **512K**: Async overhead (still excellent for async)
 
 ### Latency

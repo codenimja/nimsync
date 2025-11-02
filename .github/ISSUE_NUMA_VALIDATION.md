@@ -21,8 +21,8 @@ NUMA introduces memory access latency differences:
 
 ## Current Unknowns
 1. **Does SPSC work well across sockets?**
-   - If producer on socket 0, consumer on socket 1, does 615M ops/sec hold?
-   - Or does it degrade to 100M ops/sec due to remote memory access?
+   - If producer on socket 0, consumer on socket 1, does 558M ops/sec micro-benchmark hold?
+   - Or does it degrade significantly due to remote memory access?
 
 2. **Is cache-line alignment (64 bytes) optimal?**
    - Current padding prevents false sharing on single socket
