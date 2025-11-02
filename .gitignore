@@ -13,6 +13,15 @@ tests/test_*
 tests/*/*.exe
 tests/*/*/*.exe
 
+# Compiled benchmarks
+tests/performance/benchmark_*
+!tests/performance/benchmark_*.nim
+!tests/performance/*.sh
+!tests/performance/*.md
+
+# Benchmark results
+benchmark_results_*/
+
 # Nim cache
 nimcache/
 .nimcache/
@@ -59,3 +68,10 @@ CLAUDE.md
 STATUS_INTERNAL.md
 ROADMAP*.md
 SUPPORT.md
+BENCHMARK_RESULTS_FOR_NIM_CREATOR.md
+
+# Internal/personal documentation (not for repo)
+CLAUDE.md
+STATUS_INTERNAL.md
+ROADMAP_v1.0.md
+BENCHMARK_RESULTS_FOR_NIM_CREATOR.md

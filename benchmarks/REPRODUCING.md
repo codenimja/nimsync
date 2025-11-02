@@ -1,21 +1,32 @@
 # Reproducing Benchmark Results
 
-This guide explains how to reproduce nimsync's verified SPSC channel performance.
+**⚠️ DEPRECATED**: This guide is outdated. For current benchmarking:
 
-## Latest Verified Results
+👉 **See [`tests/performance/README.md`](../tests/performance/README.md)** for the official benchmark suite
 
-**Simple Single-Threaded**: 600M+ ops/sec peak, 593M+ average  
-**Concurrent Async**: 512K ops/sec peak, 346K average
+## Latest Results (New Suite)
 
-These numbers are reproducible on modern hardware (2020+) with the exact commands below.
+**Comprehensive Benchmark Suite** - 7 industry-standard tests:
+- **Throughput**: 615M ops/sec peak
+- **Latency**: 30ns p50, 31ns p99 
+- **Burst Load**: 300M ops/sec average, 21% variance
+- **Buffer Optimization**: 2048 slots optimal, 559M ops/sec
+- **Stress Test**: 0% contention at 500K operations
+- **Sustained**: Stable performance over 10 seconds
+- **Async**: 512K ops/sec (shows async overhead)
 
-## Critical Context
+## Why the New Suite?
 
-Performance varies significantly based on:
-- **Benchmark type**: Single-threaded (600M+) vs multi-threaded (50M-200M) vs async (500K)
-- **Hardware**: CPU speed, cache size, memory bandwidth
-- **System load**: Other processes, virtualization overhead
-- **Compiler flags**: Release builds are 10-100x faster than debug
+The new benchmark suite follows industry best practices from:
+- **Tokio** (Rust): Latency percentiles, async overhead measurement
+- **Go**: Channel benchmarking methodology
+- **Rust Criterion**: Statistical analysis
+- **LMAX Disruptor**: Buffer sizing optimization
+- **Redis/Cassandra**: Burst patterns, sustained stability testing
+
+---
+
+## Legacy Guide (Historical Reference)
 
 ## What You'll Need
 

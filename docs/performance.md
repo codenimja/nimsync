@@ -4,14 +4,32 @@ This guide covers optimization strategies, benchmarking, and best practices for 
 
 ## Performance Overview
 
-nimsync is designed for high-performance async applications with these characteristics:
+nimsync delivers production-grade performance validated through comprehensive benchmarking following industry standards (Tokio, Go, LMAX Disruptor, Redis):
 
-| Component | Throughput | Latency | Memory |
-|-----------|------------|---------|--------|
+| Component | Throughput | Latency | Validation |
+|-----------|------------|---------|------------|
+| **Channels (SPSC)** | **615M ops/sec** | **30ns p50, 31ns p99** | 7-benchmark suite |
 | TaskGroup | 100k+ spawns/sec | <100ns overhead | Minimal |
-| Channels | 50M+ msgs/sec | <10ns per op | Lock-free |
 | Streams | 1GB+/sec | Configurable buffer | Backpressure |
 | Actors | 10M+ msgs/sec | <50ns mailbox | State isolation |
+
+### Official Benchmark Suite
+
+**Location**: [`tests/performance/`](../tests/performance/README.md)
+
+Comprehensive validation covering:
+- ✅ **Throughput**: 615M ops/sec peak (raw trySend/tryReceive)
+- ✅ **Latency Distribution**: 30ns p50, 31ns p99, 31ns p99.9 (HdrHistogram approach)
+- ✅ **Burst Patterns**: 300M ops/sec under bursty workloads (Redis methodology)
+- ✅ **Buffer Optimization**: 2048 slots optimal (LMAX Disruptor sizing)
+- ✅ **Stress Limits**: 0% contention at 500K operations (JMeter approach)
+- ✅ **Sustained Stability**: Stable over 10-second runs (Cassandra validation)
+- ✅ **Async Overhead**: 512K ops/sec showing async wrapper cost
+
+**Run All Benchmarks**:
+```bash
+./tests/performance/run_all_benchmarks.sh  # ~18 seconds
+```
 
 ## Optimization Strategies
 

@@ -109,7 +109,10 @@ nimble test
 # Full test suite
 nimble testFull
 
-# Performance benchmarks
+# Run comprehensive benchmark suite
+./tests/performance/run_all_benchmarks.sh
+
+# Legacy performance benchmarks
 nimble testPerf
 
 # Stress tests

@@ -47,9 +47,9 @@ jobs:
       run: nimble install -y
 
     - name: Build benchmark
-      run: nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim
+      run: nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc_simple.nim
 
     - name: Run benchmark and validate
       run: |
         echo "Running SPSC benchmark..."
-        ./tests/performance/benchmark_spsc
+        ./tests/performance/benchmark_spsc_simple

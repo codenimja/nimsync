@@ -72,7 +72,10 @@ nimble testQuick
 # Run comprehensive test suite
 nimble testFull
 
-# Run performance benchmarks
+# Run comprehensive benchmark suite (recommended)
+./tests/performance/run_all_benchmarks.sh
+
+# Or run individual benchmarks
 nimble testPerf
 
 # Run intensive stress tests

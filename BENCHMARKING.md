@@ -1,30 +1,47 @@
 # Benchmarking nimsync
 
-This document explains how to run, verify, and contribute benchmarks for nimsync.
+**⚠️ DEPRECATED**: This document is outdated. For current benchmarking:
 
-## Quick Start
+👉 **See [`BENCHMARKS.md`](BENCHMARKS.md)** - Comprehensive benchmark overview  
+👉 **See [`tests/performance/README.md`](tests/performance/README.md)** - Complete 7-benchmark suite  
+👉 **See [`tests/performance/BENCHMARKING_STANDARDS.md`](tests/performance/BENCHMARKING_STANDARDS.md)** - Our methodology
 
-### Run the Official Benchmark
+## Quick Start (New Suite)
+
+### Run All 7 Benchmarks (~18 seconds)
 
 ```bash
-# Clone and build
 git clone https://github.com/codenimja/nimsync.git
 cd nimsync
 nimble install -y
 
-# Compile benchmark
-nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim
-
-# Run it
-./tests/performance/benchmark_spsc
+# Run complete benchmark suite
+./tests/performance/run_all_benchmarks.sh
 ```
 
 ### What to Expect
 
-On modern hardware (2020+), you should see:
-- **Peak throughput**: 50M-200M+ ops/sec (depending on CPU)
-- **Average latency**: 5-20 ns/op
-- **Consistency**: Results should be within 10-20% across runs
+Revolutionary results following industry standards (Tokio, Go, LMAX Disruptor, Redis):
+- **Throughput**: 615M ops/sec peak
+- **Latency**: 30ns p50, 31ns p99 (NOT averages - percentiles matter!)
+- **Burst Load**: 300M ops/sec, 21% variance
+- **Stress Test**: 0% contention at 500K operations
+- **Sustained**: Stable over 10-second runs
+- **Buffer Optimization**: 2048 slots optimal
+- **Async Overhead**: 512K ops/sec showing wrapper cost
+
+## Why the New Suite?
+
+The new benchmark suite provides comprehensive validation:
+- ✅ **7 comprehensive benchmarks** (not just throughput)
+- ✅ **Industry-standard methodologies** (Tokio, Go, Rust Criterion, LMAX, Redis)
+- ✅ **Production metrics** (p99 latency, burst patterns, stress limits)
+- ✅ **Fast execution** (all complete in <30 seconds)
+- ✅ **Well documented** (each benchmark explains what/why/how)
+
+---
+
+## Legacy Information (Historical Reference)
 
 ## Verified Results
 

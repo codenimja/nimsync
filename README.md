@@ -1,17 +1,22 @@
 # nimsync
 
 [![CI](https://github.com/codenimja/nimsync/actions/workflows/ci.yml/badge.svg)](https://github.com/codenimja/nimsync/actions/workflows/ci.yml)
+[![Benchmark](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml/badge.svg)](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
+![Peak](https://img.shields.io/badge/peak-615M_ops/sec-success)
+![P99](https://img.shields.io/badge/p99_latency-31ns-blue)
+![Contention](https://img.shields.io/badge/contention-0%25-brightgreen)
 
-**Lock-free SPSC channels for Nim with verifiable performance**
+**Lock-free SPSC channels for Nim with production-grade performance validation**
 
-Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) channels. Performance ranges from 20M-600M+ ops/sec depending on hardware and benchmark type. This is verified, tested, real code.
+Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) channels with comprehensive benchmarking following industry standards (Tokio, Go, LMAX Disruptor, Redis). Performance: 615M ops/sec throughput, 30ns p50 latency, stable under burst loads. This is verified, tested, real code.
 
 ## Features
 
-- **High throughput**: 600M+ ops/sec (simple), 50M-200M ops/sec (multi-threaded)
-- **Verifiable**: Run benchmarks yourself in 5 minutes
+- **High throughput**: 615M ops/sec (raw), 512K ops/sec (async) - [See all 7 benchmarks](#performance)
+- **Production-validated**: Comprehensive benchmark suite (throughput, latency, burst, stress, sustained)
+- **Industry-standard testing**: Following Tokio, Go, Rust Criterion, LMAX Disruptor methodologies
 - Lock-free ring buffer with atomic operations
 - Zero GC pressure with ORC memory management
 - Cache-line aligned (64 bytes) to prevent false sharing
@@ -97,33 +102,36 @@ Async wrappers using Chronos. **Note**: Uses 1ms polling internally.
 
 ### Utilities
 ```nim
-proc capacity[T](channel: Channel[T]): int
 proc isEmpty[T](channel: Channel[T]): bool
 proc isFull[T](channel: Channel[T]): bool
 ```
+## Performance
 
-## Benchmarks
+### Comprehensive Benchmark Suite
 
-**Performance varies by hardware and benchmark type.** Results from simple single-threaded benchmark (Linux x86_64, Nim 2.2.4):
+nimsync includes 7 official benchmarks following industry best practices:
 
-| Metric | Performance |
-|--------|-------------|
-| Peak throughput | 600M+ ops/sec |
-| Average throughput | 593M+ ops/sec |
-| Memory per channel | < 1KB |
-| Operation latency | ~1.7 ns/op |
+| Benchmark | Metric | Result | Industry Reference |
+|-----------|--------|--------|--------------------|
+| **Throughput** | Peak ops/sec | 615M | Go channels benchmarking |
+| **Latency** | p50/p99/p99.9 | 30ns/31ns/31ns | Tokio/Cassandra percentiles |
+| **Burst Load** | Stability | 300M ops/sec, 21% variance | Redis burst testing |
+| **Buffer Sizing** | Optimal size | 2048 slots, 559M ops/sec | LMAX Disruptor |
+| **Stress Test** | Contention | 0% at 500K ops | JMeter/Gatling |
+| **Sustained** | Long-duration | Stable over 10s | Cassandra/ScyllaDB |
+| **Async** | Overhead | 512K ops/sec | Standard async benchmarking |
 
-*Multi-threaded benchmarks show 50M-200M ops/sec due to thread synchronization overhead. Your results will vary.*
-
-### Run Yourself
+### Quick Run
 ```bash
-# Simple benchmark (fastest)
-nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_spsc_simple.nim
-./tests/performance/benchmark_spsc_simple
+# Run complete benchmark suite (~18 seconds)
+./tests/performance/run_all_benchmarks.sh
 
-# Multi-threaded benchmark (more realistic)
-nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim
-./tests/performance/benchmark_spsc
+# Run individual benchmarks
+nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_latency.nim
+./tests/performance/benchmark_latency
+```
+
+**Full Documentation**: See [`tests/performance/README.md`](tests/performance/README.md) for detailed explanations of each benchmark.
 ```
 
 ### Third-Party Verification

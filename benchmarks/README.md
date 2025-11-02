@@ -1,13 +1,49 @@
 # nimsync Benchmarks
 
-Official performance benchmarks for nimsync. All results are reproducible and verified in CI.
+**⚠️ DEPRECATED**: This directory is deprecated. Official benchmarks have moved to:
 
-## Quick Links
+👉 **[`tests/performance/`](../tests/performance/README.md)** - Complete benchmark suite with 7 industry-standard tests
 
-- **🏃 [Run Benchmarks](#running-benchmarks)** - 5-minute verification
-- **📋 [Latest Results](#verified-results)** - Current performance numbers
-- **🔬 [CI Artifacts](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)** - Download automated benchmark runs
-- **🧪 Internal Stress Tests** - See `tests/benchmarks/stress_tests/` for validation suite
+## Why the Move?
+
+We've improved our benchmarking approach:
+- ✅ **7 comprehensive benchmarks** following Tokio, Go, Rust Criterion, LMAX Disruptor standards
+- ✅ **Fast execution**: All benchmarks complete in <30 seconds
+- ✅ **Production metrics**: Throughput, latency percentiles, burst patterns, stress limits
+- ✅ **Well documented**: Each benchmark explains what/why/how with industry references
+
+## New Benchmark Suite
+
+| Benchmark | What It Measures | Reference |
+|-----------|------------------|------------|
+| `benchmark_spsc_simple.nim` | Raw throughput (615M ops/sec) | Go channels |
+| `benchmark_latency.nim` | Latency distribution (30ns p50) | Tokio/Cassandra |
+| `benchmark_burst.nim` | Burst stability (300M ops/sec) | Redis |
+| `benchmark_sizes.nim` | Optimal buffer size (2048 slots) | LMAX Disruptor |
+| `benchmark_stress.nim` | Maximum load (0% contention) | JMeter/Gatling |
+| `benchmark_sustained.nim` | Long-duration stability | Cassandra/ScyllaDB |
+| `benchmark_concurrent.nim` | Async overhead (512K ops/sec) | Async runtimes |
+
+## Quick Start
+
+```bash
+# Run complete suite
+./tests/performance/run_all_benchmarks.sh
+
+# Run individual benchmark
+nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_latency.nim
+./tests/performance/benchmark_latency
+```
+
+## CI Integration
+
+Benchmarks run automatically on every commit:
+- 🔬 [View CI Results](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)
+- 📥 Download benchmark artifacts from GitHub Actions
+
+---
+
+**For Legacy Results**: Historical data remains in this directory for reference.
 
 ## Verified Results
 

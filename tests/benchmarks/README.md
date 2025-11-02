@@ -1,6 +1,17 @@
-# Benchmark Data Organization
+# Legacy Benchmark Data
 
-This directory contains organized benchmark results and data for nimsync performance validation.
+**⚠️ DEPRECATED**: This directory contains legacy benchmark infrastructure.
+
+👉 **Official Benchmarks**: [`tests/performance/`](../performance/README.md) - 7 comprehensive industry-standard benchmarks
+
+## What Changed?
+
+We've improved our benchmarking approach:
+- **Old**: Ad-hoc stress tests and validation scripts
+- **New**: 7 official benchmarks following Tokio, Go, Rust Criterion, LMAX Disruptor, Redis methodologies
+- **Result**: Production-grade validation with throughput, latency percentiles, burst patterns, stress limits
+
+This directory remains for legacy stress test scripts.
 
 ## Directory Structure
 
