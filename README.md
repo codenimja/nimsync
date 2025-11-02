@@ -30,12 +30,19 @@ Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) c
 - Nim 2.0.0+ (required)
 - Chronos 4.0.0+
 
+### Via Nimble (Direct)
+```bash
+nimble install https://github.com/codenimja/nimsync
+```
+
 ### From Source
 ```bash
 git clone https://github.com/codenimja/nimsync.git
 cd nimsync
 nimble install
 ```
+
+> **Note:** Official Nimble registry submission pending (PR in progress). Use direct URL installation above until merged.
 
 ## Quick Start
 
