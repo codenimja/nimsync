@@ -198,23 +198,24 @@ This repository contains experimental implementations of:
 
 ## Known Issues
 
-See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for complete list. Key issues:
+See [GitHub Issues](.github/) for experimental features and known limitations:
 
 - **Async wrappers use polling** - exponential backoff (1ms-100ms), use `trySend`/`tryReceive` for zero-latency
-- **TaskGroup has bugs** - nested async macros fail (not exported)
-- **Experimental code incomplete** - actors/streams/scheduler not production-ready
+- **TaskGroup has bugs** - nested async macros fail (not exported) - [See issue template](.github/ISSUE_TASKGROUP_BUG.md)
+- **MPSC not implemented** - multi-producer channels needed for actors - [See issue template](.github/ISSUE_MPSC_CHANNELS.md)
+- **NUMA untested** - cross-socket performance unknown - [See issue template](.github/ISSUE_NUMA_VALIDATION.md)
 
-**These are documented bugs, not intentional behavior.** Contributions to fix welcome!
+**These are documented limitations, not intentional behavior.** Contributions to fix welcome!
 
 ## Contributing
 
 Contributions welcome! Priority areas:
-1. Fix TaskGroup nested async bug (blocking v0.3.0)
-2. Implement MPSC channels (enables actors)
-3. Test and validate Streams
+1. Fix TaskGroup nested async bug (blocking v0.3.0) - [Details](.github/ISSUE_TASKGROUP_BUG.md)
+2. Implement MPSC channels (enables actors) - [Details](.github/ISSUE_MPSC_CHANNELS.md)
+3. Validate NUMA performance - [Details](.github/ISSUE_NUMA_VALIDATION.md)
 4. Cross-platform support (macOS/Windows)
 
-See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for detailed bug list.
+See [issue templates](.github/) for detailed specifications and acceptance criteria.
 
 ## License
 
