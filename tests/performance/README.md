@@ -148,4 +148,4 @@ To fairly compare with Go channels, Rust crossbeam, etc:
 4. **Multiple runs**: Average of 3-5 runs
 5. **Report variance**: Include min/max/stddev
 
-See [BENCHMARKING.md](../../BENCHMARKING.md) for detailed comparison guidelines.
+See [BENCHMARKING_STANDARDS.md](BENCHMARKING_STANDARDS.md) for our methodology.

@@ -138,7 +138,7 @@ nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_latency.nim
 
 Want to verify these claims yourself?
 
-- **Reproduction Guide**: See [BENCHMARKING.md](BENCHMARKING.md) for step-by-step instructions
+- **Reproduction Guide**: See [BENCHMARKS.md](BENCHMARKS.md) and [tests/performance/README.md](tests/performance/README.md)
 - **CI Benchmarks**: Automatic benchmarks on every commit → [GitHub Actions](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)
 - **Expected Range**: 20M-600M ops/sec depending on CPU, benchmark type, and system load
 
