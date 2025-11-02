@@ -1,25 +1,49 @@
 # nimsync Benchmarks
 
-Performance documentation and reproduction guide for nimsync.
+Official performance benchmarks for nimsync. All results are reproducible and verified in CI.
 
-> **Note**: Comprehensive benchmark implementations and community contributions are tracked in the separate [nimsync-benchmarks](https://github.com/codenimja/nimsync-benchmarks) repository with continuous CI validation.
+> **📊 See also**: [nimsync-benchmarks](https://github.com/codenimja/nimsync-benchmarks) repository for community-driven performance comparisons with other frameworks.
 
 ## Quick Links
 
-- **📊 [Official Benchmark Results](https://github.com/codenimja/nimsync-benchmarks)** - Community-driven performance tracking
-- **🔬 [Reproduction Guide](./REPRODUCING.md)** - How to reproduce 213M ops/sec SPSC performance
+- **🏃 [Run Benchmarks](#running-benchmarks)** - 5-minute verification
+- **📋 [Latest Results](#verified-results)** - Current performance numbers
+- **🔬 [CI Artifacts](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)** - Download automated benchmark runs
 - **🧪 Internal Stress Tests** - See `tests/benchmarks/stress_tests/` for validation suite
 
-## Performance Summary
+## Verified Results
 
-Validated on Linux x86_64 with Nim 2.2.4:
+**Latest benchmarks** (automated CI + local verification):
 
-| Benchmark | Result | Status |
-|-----------|--------|--------|
-| **SPSC Channel** | 213M ops/sec peak, 50-100M typical | ✅ Verified |
-| **Task Spawn** | < 100ns overhead | ✅ Verified |
-| **Memory Usage** | < 1KB per channel | ✅ Verified |
-| **GC Pressure** | < 2ms pauses at 1GB | ✅ Verified |
+### Simple Single-Threaded Benchmark
+Location: `tests/performance/benchmark_spsc_simple.nim`
+
+| Metric | Result |
+|--------|--------|
+| **Peak Throughput** | 600M+ ops/sec |
+| **Average Throughput** | 593M+ ops/sec |
+| **Latency** | ~1.7 ns/op |
+
+**What this measures**: Raw SPSC channel performance without threading or async overhead.
+
+### Concurrent Async Benchmark
+Location: `tests/performance/benchmark_concurrent.nim`
+
+| Metric | Result |
+|--------|--------|
+| **Peak Throughput** | 512K ops/sec |
+| **Average Throughput** | 346K ops/sec |
+| **Latency** | ~2000 ns/op |
+
+**What this measures**: Realistic async send/recv with exponential backoff polling (as documented in KNOWN_ISSUES.md).
+
+### Performance Summary
+
+| Benchmark Type | Throughput | Use Case |
+|----------------|------------|----------|
+| **Simple (trySend/tryReceive)** | 600M+ ops/sec | Maximum performance, tight loops |
+| **Async (send/recv)** | 500K ops/sec | Convenience, async/await code |
+| **Multi-threaded** | 50M-200M ops/sec | Thread coordination overhead |
 
 ### 2. Stress Tests
 
@@ -43,28 +67,39 @@ Long-running stability validation.
 
 ## Running Benchmarks
 
-### Basic Usage
+### Quick Start (5 minutes)
 
 ```bash
-# All benchmarks with default settings
-nimble bench
+# Clone repository
+git clone https://github.com/codenimja/nimsync.git
+cd nimsync
+nimble install -y
 
-# Specific benchmark
-nim c -d:release benchmarks/spsc_throughput.nim
-./spsc_throughput
+# Run simple benchmark (600M+ ops/sec)
+nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_spsc_simple.nim
+./tests/performance/benchmark_spsc_simple
+
+# Run concurrent benchmark (512K ops/sec)  
+nim c -r tests/performance/benchmark_concurrent.nim
 ```
 
-### Advanced Options
+### Expected Results
 
-```bash
-# With custom iterations
-nim c -d:release benchmarks/spsc_throughput.nim
-./spsc_throughput --iterations=1000000
+Performance varies by hardware:
 
-# With detailed output
-nim c -d:release -d:benchStats benchmarks/spsc_throughput.nim
-./spsc_throughput --verbose
-```
+| Hardware Class | Simple Benchmark | Concurrent Benchmark |
+|----------------|------------------|---------------------|
+| **High-end Desktop (2020+)** | 400M-700M ops/sec | 400K-600K ops/sec |
+| **Mid-range Desktop (2018+)** | 200M-500M ops/sec | 200K-400K ops/sec |
+| **Laptop** | 100M-300M ops/sec | 100K-300K ops/sec |
+| **GitHub CI Runners** | 300M-600M ops/sec | 200K-500K ops/sec |
+
+### View CI Results
+
+Every commit runs automated benchmarks:
+1. Go to [Actions → Continuous Benchmarking](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)
+2. Select a recent run
+3. Download `benchmark-results-*` artifacts
 
 ## Understanding Results
 

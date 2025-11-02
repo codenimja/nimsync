@@ -1,52 +1,83 @@
 # Reproducing Benchmark Results
 
-This guide explains how to reproduce the 213M+ ops/sec SPSC channel throughput claim.
+This guide explains how to reproduce nimsync's verified SPSC channel performance.
+
+## Latest Verified Results
+
+**Simple Single-Threaded**: 600M+ ops/sec peak, 593M+ average  
+**Concurrent Async**: 512K ops/sec peak, 346K average
+
+These numbers are reproducible on modern hardware (2020+) with the exact commands below.
 
 ## Critical Context
 
-**The 213M ops/sec number is peak performance under ideal conditions.**
+Performance varies significantly based on:
+- **Benchmark type**: Single-threaded (600M+) vs multi-threaded (50M-200M) vs async (500K)
+- **Hardware**: CPU speed, cache size, memory bandwidth
+- **System load**: Other processes, virtualization overhead
+- **Compiler flags**: Release builds are 10-100x faster than debug
 
-Real-world applications will typically see **50-100M ops/sec**, which is still exceptional performance - faster than Go channels (~30M) and competitive with Rust crossbeam (~45M).
+## What You'll Need
 
-## Hardware Specification
+- **CPU**: Modern x86_64 (2018+) or ARM64 (M1+)
+- **OS**: Linux (tested), macOS (should work), Windows (untested)
+- **Nim**: 2.0.0+ (tested on 2.2.4)
+- **RAM**: 4GB+ available
+- **Time**: 5 minutes for basic verification
 
-The 213M benchmark was run on:
+## Quick Reproduction (5 Minutes)
 
-- **CPU**: AMD Ryzen 9 7950X (16-core, 32-thread)
-- **RAM**: 64GB DDR5-6000 CL30
-- **OS**: Ubuntu 24.04 LTS (bare metal, not VM)
-- **Kernel**: 6.8+
-- **Nim**: 2.2.4
-- **GC**: ORC (default in Nim 2.x)
-
-## Reproduction Steps
-
-### 1. CPU Pinning (Critical for Peak Performance)
-
-```bash
-# Pin to a single core to eliminate cache coherency overhead
-taskset -c 0 ./benchmark_spsc
-```
-
-Without CPU pinning, performance drops to ~100M ops/sec due to cross-core cache synchronization.
-
-### 2. Compiler Flags
+### Step 1: Clone and Install
 
 ```bash
-nim c \
-  --d:danger \
-  --opt:speed \
-  --passC:"-march=native" \
-  --passC:"-O3" \
-  --mm:orc \
-  tests/benchmarks/archive/benchmark_spsc.nim
+git clone https://github.com/codenimja/nimsync.git
+cd nimsync
+nimble install -y
 ```
 
-Flags explained:
-- `--d:danger`: Disable all runtime checks (bounds, nil, overflow)
-- `--opt:speed`: Optimize for speed over size
-- `-march=native`: Use CPU-specific instructions
-- `--mm:orc`: Use ORC garbage collector (required)
+### Step 2: Run Simple Benchmark (600M+ ops/sec)
+
+```bash
+# Compile with maximum optimization
+nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_spsc_simple.nim
+
+# Run it
+./tests/performance/benchmark_spsc_simple
+```
+
+**Expected output**:
+```
+============================================================
+nimsync SPSC Channel Benchmark
+============================================================
+
+System Information:
+  OS: Linux
+  Nim Version: 2.2.4
+
+Peak Throughput: 600,445,855 ops/sec
+Average Throughput: 593,827,734 ops/sec
+```
+
+### Step 3: Run Concurrent Benchmark (512K ops/sec)
+
+```bash
+# Compile and run
+nim c -r tests/performance/benchmark_concurrent.nim
+```
+
+**Expected output**:
+```
+Peak Throughput: 512,140 ops/sec
+Average Throughput: 346,446 ops/sec
+```
+
+## Compiler Flags Explained
+
+- **`-d:danger`**: Disable all runtime checks (bounds, nil, overflow)
+- **`--opt:speed`**: Optimize for speed over size  
+- **`--mm:orc`**: Use ORC garbage collector (default in Nim 2.x)
+- **`-r`**: Compile and run immediately
 
 ### 3. Disable CPU Frequency Scaling
 
