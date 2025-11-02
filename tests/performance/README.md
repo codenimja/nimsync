@@ -125,7 +125,7 @@ nim c -r tests/performance/benchmark_concurrent.nim
 ### 8. benchmark_mpsc.nim - Multi-Producer Performance
 **What it measures**: MPSC channel throughput, latency, and scalability
 **Industry reference**: JCTools MPSC queue benchmarking, Disruptor patterns
-**Results**: 16M ops/sec (2 producers), 9M ops/sec (4 producers), wait-free algorithm
+**Results**: 15M ops/sec (2 producers), 8.5M (4 producers), 5.3M (8 producers) - wait-free algorithm
 **Use case**: Concurrent producer scenarios (worker threads, event aggregation)
 
 ```bash
@@ -141,10 +141,11 @@ nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_mpsc.nim
 - **Burst workload**: Handling bursty traffic patterns
 
 **Key findings**:
-- **2 producers**: Optimal sweet spot (16M ops/sec)
+- **2 producers**: Optimal sweet spot (15M ops/sec)
+- **4 producers**: Good scalability (8.5M ops/sec)
+- **8 producers**: Memory bandwidth limited (5.3M ops/sec)
 - **Wait-free algorithm**: No CAS retry loops, predictable latency
-- **Stress tested**: 1M items across 8 producers (5.65M ops/sec)
-- **Latency stability**: 96-117ns across 1-4 producers
+- **SPSC advantage**: 3.5× faster in realistic threaded workloads (35M vs 10M ops/sec)
 
 ## Design Principles
 

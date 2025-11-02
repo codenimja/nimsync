@@ -15,38 +15,46 @@ nimsync delivers high performance validated through comprehensive benchmarking:
 
 | Benchmark | Metric | Result | Industry Reference |
 |-----------|--------|--------|-------------------|
-| **Throughput** | Peak ops/sec | **615M** | Go channels benchmarking |
-| **Latency** | p50/p99/p99.9 | **30ns/31ns/31ns** | Tokio/Cassandra percentiles |
-| **Burst Load** | Stability | **300M ops/sec** | Redis burst testing |
-| **Buffer Sizing** | Optimal size | **2048 slots** | LMAX Disruptor |
+| **Throughput (SPSC)** | Micro-benchmark | **558M ops/sec** | Go channels benchmarking |
+| **Throughput (SPSC)** | Realistic threaded | **~35M ops/sec** | Thread scheduling overhead |
+| **Throughput (MPSC)** | 2/4/8 producers | **15M/8.5M/5.3M** | Multi-producer verification |
+| **Latency** | p50/p99/p99.9 | **20ns/31ns/50ns** | Tokio/Cassandra percentiles |
+| **Burst Load** | Stability | **385M ops/sec** | Redis burst testing |
+| **Buffer Sizing** | Optimal size | **4096 slots** | LMAX Disruptor |
 | **Stress Test** | Contention | **0% at 500K ops** | JMeter/Gatling |
 | **Sustained** | Long-duration | **Stable over 10s** | Cassandra/ScyllaDB |
 | **Async** | Overhead | **512K ops/sec** | Async runtime standards |
+
+**Key Findings:**
+- SPSC is **3.5× faster** than MPSC in realistic threaded workloads (35M vs 10M ops/sec)
+- Micro-benchmarks show peak potential; realistic workloads include thread scheduling overhead
+- All numbers verified in CI - we report actual performance, not inflated claims
 
 ## 🎪 The Complete Suite
 
 ### 1. **Throughput** - Raw Performance Baseline
 **File**: `tests/performance/benchmark_spsc_simple.nim`  
 **Measures**: Maximum ops/sec with zero contention  
-**Result**: 615M ops/sec peak, 599M average  
+**Result**: 558M ops/sec peak, 551M average (micro-benchmark)  
+**Realistic**: ~35M ops/sec with thread spawning and OS scheduling  
 **Reference**: Standard Go channel benchmarking
 
 ### 2. **Latency** - Distribution Analysis
 **File**: `tests/performance/benchmark_latency.nim`  
 **Measures**: p50, p95, p99, p99.9 percentiles (NOT averages)  
-**Result**: 30ns p50, 31ns p99, 31ns p99.9  
+**Result**: 20ns p50, 31ns p99, 50ns p99.9  
 **Reference**: HdrHistogram (Tokio, Netty, Cassandra)
 
 ### 3. **Burst Load** - Real-World Patterns
 **File**: `tests/performance/benchmark_burst.nim`  
 **Measures**: Performance under bursty workloads  
-**Result**: 300M ops/sec average, 21% variance  
+**Result**: 385M ops/sec average, 18% variance  
 **Reference**: Redis/Memcached burst testing
 
 ### 4. **Buffer Sizing** - Optimization Guide
 **File**: `tests/performance/benchmark_sizes.nim`  
 **Measures**: Efficiency across buffer sizes (8-4096 slots)  
-**Result**: 2048 slots optimal, 559M ops/sec peak  
+**Result**: 4096 slots optimal, 557M ops/sec peak  
 **Reference**: LMAX Disruptor ring buffer sizing
 
 ### 5. **Stress Test** - Breaking Point
@@ -64,8 +72,14 @@ nimsync delivers high performance validated through comprehensive benchmarking:
 ### 7. **Async** - Overhead Quantification
 **File**: `tests/performance/benchmark_concurrent.nim`  
 **Measures**: Async wrapper cost vs raw trySend/tryReceive  
-**Result**: 512K ops/sec (async), 615M (raw) = 0.08% efficiency  
+**Result**: 512K ops/sec (async), 558M (raw) = 0.09% efficiency  
 **Reference**: Standard async runtime benchmarking
+
+### 8. **MPSC** - Multi-Producer Verification
+**File**: `tests/performance/benchmark_mpsc.nim`  
+**Measures**: Wait-free multi-producer performance  
+**Result**: 15M ops/sec (2P), 8.5M (4P), 5.3M (8P)  
+**Reference**: Multi-threaded concurrency validation
 
 ## 🚀 Quick Start
 

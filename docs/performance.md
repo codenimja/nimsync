@@ -8,7 +8,8 @@ nimsync delivers production-grade performance validated through comprehensive be
 
 | Component | Throughput | Latency | Validation |
 |-----------|------------|---------|------------|
-| **Channels (SPSC)** | **615M ops/sec** | **30ns p50, 31ns p99** | 7-benchmark suite |
+| **Channels (SPSC)** | **558M micro (~35M realistic)** | **20ns p50, 31ns p99** | 7-benchmark suite |
+| **Channels (MPSC)** | **15M ops/sec (2P)** | **64ns p99** | Multi-producer verified |
 | TaskGroup | 100k+ spawns/sec | <100ns overhead | Minimal |
 | Streams | 1GB+/sec | Configurable buffer | Backpressure |
 | Actors | 10M+ msgs/sec | <50ns mailbox | State isolation |
@@ -18,10 +19,11 @@ nimsync delivers production-grade performance validated through comprehensive be
 **Location**: [`tests/performance/`](../tests/performance/README.md)
 
 Comprehensive validation covering:
-- ✅ **Throughput**: 615M ops/sec peak (raw trySend/tryReceive)
-- ✅ **Latency Distribution**: 30ns p50, 31ns p99, 31ns p99.9 (HdrHistogram approach)
-- ✅ **Burst Patterns**: 300M ops/sec under bursty workloads (Redis methodology)
-- ✅ **Buffer Optimization**: 2048 slots optimal (LMAX Disruptor sizing)
+- ✅ **Throughput**: 558M ops/sec micro-benchmark, ~35M realistic threaded (SPSC)
+- ✅ **MPSC**: 15M ops/sec (2 producers), 8.5M (4P), 5.3M (8P) - wait-free algorithm
+- ✅ **Latency Distribution**: 20ns p50, 31ns p99, 50ns p99.9 (HdrHistogram approach)
+- ✅ **Burst Patterns**: 385M ops/sec under bursty workloads, 18% variance (Redis methodology)
+- ✅ **Buffer Optimization**: 4096 slots optimal, 557M ops/sec (LMAX Disruptor sizing)
 - ✅ **Stress Limits**: 0% contention at 500K operations (JMeter approach)
 - ✅ **Sustained Stability**: Stable over 10-second runs (Cassandra validation)
 - ✅ **Async Overhead**: 512K ops/sec showing async wrapper cost

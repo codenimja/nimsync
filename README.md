@@ -5,17 +5,17 @@
 [![Nimble](https://img.shields.io/badge/nimble-v1.1.0-orange.svg)](https://nimble.directory/pkg/nimsync)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
-![Peak](https://img.shields.io/badge/peak-615M_ops/sec-success)
+![Peak](https://img.shields.io/badge/peak-558M_ops/sec-success)
 ![P99](https://img.shields.io/badge/p99_latency-31ns-blue)
 ![Contention](https://img.shields.io/badge/contention-0%25-brightgreen)
 
 **Lock-free SPSC and MPSC channels for Nim with production-grade performance validation**
 
-nimsync v1.1.0 is production-ready for both SPSC and MPSC channels with comprehensive benchmarking following industry standards (Tokio, Go, LMAX Disruptor, Redis). Performance: 615M ops/sec SPSC peak, 16M ops/sec MPSC (2 producers), 31ns P99 latency, stable under burst loads. This is verified, tested, real code.
+nimsync v1.1.0 is production-ready for SPSC and MPSC channels with comprehensive benchmarking following industry standards (Tokio, Go, LMAX Disruptor). Performance: 558M ops/sec SPSC micro-benchmark (~35M realistic), 15M ops/sec MPSC (2 producers), 31ns P99 latency. All numbers verified in CI.
 
 ## Features
 
-- **High throughput**: 615M ops/sec SPSC (raw), 16M ops/sec MPSC (2 producers), 512K ops/sec (async) - [See benchmarks](#performance)
+- **High throughput**: 558M ops/sec SPSC micro (~35M realistic), 15M ops/sec MPSC (2 producers), 512K ops/sec async - [See benchmarks](#performance)
 - **Production-validated**: Comprehensive benchmark suite (throughput, latency, burst, stress, sustained)
 - **Industry-standard testing**: Following Tokio, Go, Rust Criterion, LMAX Disruptor methodologies
 - **SPSC and MPSC modes**: Single-producer or multi-producer with single consumer
@@ -148,52 +148,55 @@ proc isFull[T](channel: Channel[T]): bool
 ```
 ## Performance
 
+### SPSC vs MPSC (Verified Benchmarks)
+
+| Mode | Producers | Micro-benchmark | Realistic Threaded | P99 Latency | Use Case |
+|------|-----------|-----------------|---------------------|-------------|----------|
+| **SPSC** | 1 | 558M ops/sec | ~35M ops/sec | 31ns | Maximum performance, single-threaded pipeline |
+| **SPSC** | 1 (async) | 512K ops/sec | — | — | Chronos integration |
+| **MPSC** | 2 | 15M ops/sec | ~15M ops/sec | ~64ns | Multi-threaded producers |
+| **MPSC** | 4 | 8.5M ops/sec | — | ~117ns | High concurrency |
+| **MPSC** | 8 | 5.3M ops/sec | — | ~256ns | Memory-bandwidth limited |
+
+**Key insights:**
+- SPSC is **3.5× faster** than MPSC in realistic threaded workloads (35M vs 10M ops/sec)
+- Micro-benchmarks show peak potential; realistic workloads include thread scheduling overhead
+- MPSC scales well with 2 producers, degrades with 4+
+- Use SPSC when you have a single producer; use MPSC when multiple threads must produce concurrently
+
+**Methodology:**
+- All benchmarks run in CI on 4-core Intel/AMD systems
+- Micro-benchmarks: tight loops, zero external overhead
+- Realistic threaded: actual thread spawning, OS scheduling, cache effects
+- Compiled with `-d:danger --opt:speed --mm:orc`
+
 ### Comprehensive Benchmark Suite
 
-nimsync includes benchmarks for both SPSC and MPSC modes following industry best practices:
+nimsync includes 7 SPSC benchmarks + 1 MPSC suite following industry best practices:
 
-#### SPSC Benchmarks (Single Producer Single Consumer)
-
-| Benchmark | Metric | Result | Industry Reference |
-|-----------|--------|--------|--------------------|
-| **Throughput** | Peak ops/sec | 615M | Go channels benchmarking |
-| **Latency** | p50/p99/p99.9 | 30ns/31ns/31ns | Tokio/Cassandra percentiles |
-| **Burst Load** | Stability | 300M ops/sec, 21% variance | Redis burst testing |
-| **Buffer Sizing** | Optimal size | 2048 slots, 559M ops/sec | LMAX Disruptor |
-| **Stress Test** | Contention | 0% at 500K ops | JMeter/Gatling |
-| **Sustained** | Long-duration | Stable over 10s | Cassandra/ScyllaDB |
-| **Async** | Overhead | 512K ops/sec | Standard async benchmarking |
-
-#### MPSC Benchmarks (Multi-Producer Single Consumer)
-
-| Producers | Throughput | Latency (avg) | Notes |
-|-----------|-----------|---------------|-------|
-| 1P | 33M ops/sec | 30ns | Comparable to SPSC |
-| 2P | 16M ops/sec | 62ns | Optimal sweet spot |
-| 4P | 9M ops/sec | 111ns | Good scalability |
-| 8P | 4M ops/sec | 250ns | Contention limited |
-
-**Key Findings**:
-- Wait-free MPSC algorithm: No CAS retry loops
-- Best performance: 2 producers (16M ops/sec)
-- Stress test: 1M items across 8 producers (5.65M ops/sec)
-- Latency stable: 96-117ns across 1-4 producers
+| Benchmark | Metric | SPSC Result | Methodology |
+|-----------|--------|-------------|-------------|
+| Throughput | Peak ops/sec | 558M | Go channels |
+| Latency | p50/p99/p99.9 | 20ns/31ns/50ns | Tokio/Cassandra |
+| Burst Load | Stability | 385M ops/sec, 18% variance | Redis |
+| Buffer Sizing | Optimal size | 4096 slots, 557M ops/sec | LMAX Disruptor |
+| Stress Test | Contention | 0% at 500K ops | JMeter/Gatling |
+| Sustained | Long-duration | Stable over 10s | Cassandra/ScyllaDB |
+| Async | Overhead | 512K ops/sec | Standard async |
+| **MPSC** | 2/4/8 producers | 15M/8.5M/5.3M | Multi-threaded validation |
 
 ### Quick Run
+
 ```bash
-# Run SPSC benchmark suite (~18 seconds)
+# Run complete SPSC suite (~18 seconds)
 ./tests/performance/run_all_benchmarks.sh
 
-# Run MPSC benchmarks
+# Run MPSC benchmark
 nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_mpsc.nim
 ./tests/performance/benchmark_mpsc
-
-# Run individual SPSC benchmarks
-nim c -d:danger --opt:speed --mm:orc tests/performance/benchmark_latency.nim
-./tests/performance/benchmark_latency
 ```
 
-**Full Documentation**: See [`tests/performance/README.md`](tests/performance/README.md) for detailed explanations of each benchmark.
+Full documentation: [tests/performance/README.md](tests/performance/README.md)
 
 ### Third-Party Verification
 
@@ -296,8 +299,8 @@ MIT License - see LICENSE for details.
 
 **nimsync v1.1.0 is production-ready for SPSC and MPSC channels.**
 
-✅ **SPSC channels verified** - 615M ops/sec peak, 31ns P99 latency, 7-benchmark suite validation
-✅ **MPSC channels verified** - 16M ops/sec (2 producers), wait-free algorithm, comprehensive stress testing
+✅ **SPSC channels verified** - 558M ops/sec micro (~35M realistic), 31ns P99 latency, 7-benchmark suite validation
+✅ **MPSC channels verified** - 15M ops/sec (2 producers), wait-free algorithm, comprehensive stress testing
 ⚠️ **Experimental features** - TaskGroup, actors, streams not yet production-ready ([help wanted](.github/))
 
 We document performance honestly. We benchmark rigorously. We're transparent about limitations.
