@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/codenimja/nimsync/actions/workflows/ci.yml/badge.svg)](https://github.com/codenimja/nimsync/actions/workflows/ci.yml)
 [![Benchmark](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml/badge.svg)](https://github.com/codenimja/nimsync/actions/workflows/benchmark.yml)
+[![Nimble](https://img.shields.io/badge/nimble-v1.0.0-orange.svg)](https://nimble.directory/pkg/nimsync)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
 ![Peak](https://img.shields.io/badge/peak-615M_ops/sec-success)
@@ -10,7 +11,7 @@
 
 **Lock-free SPSC channels for Nim with production-grade performance validation**
 
-Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) channels with comprehensive benchmarking following industry standards (Tokio, Go, LMAX Disruptor, Redis). Performance: 615M ops/sec throughput, 30ns p50 latency, stable under burst loads. This is verified, tested, real code.
+nimsync v1.0.0 is production-ready for SPSC channels with comprehensive benchmarking following industry standards (Tokio, Go, LMAX Disruptor, Redis). Performance: 615M ops/sec peak throughput, 31ns P99 latency, stable under burst loads. This is verified, tested, real code.
 
 ## Features
 
@@ -30,9 +31,9 @@ Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) c
 - Nim 2.0.0+ (required)
 - Chronos 4.0.0+
 
-### Via Nimble (Direct)
+### Via Nimble
 ```bash
-nimble install https://github.com/codenimja/nimsync
+nimble install nimsync
 ```
 
 ### From Source
@@ -41,8 +42,6 @@ git clone https://github.com/codenimja/nimsync.git
 cd nimsync
 nimble install
 ```
-
-> **Note:** Official Nimble registry submission pending (PR in progress). Use direct URL installation above until merged.
 
 ## Quick Start
 
