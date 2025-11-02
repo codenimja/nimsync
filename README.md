@@ -5,6 +5,7 @@
 [![Nimble](https://img.shields.io/badge/nimble-v1.1.0-orange.svg)](https://nimble.directory/pkg/nimsync)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
+[![Support](https://img.shields.io/badge/support-ko--fi-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/codenimja)
 ![Peak](https://img.shields.io/badge/peak-558M_ops/sec-success)
 ![P99](https://img.shields.io/badge/p99_latency-31ns-blue)
 ![Contention](https://img.shields.io/badge/contention-0%25-brightgreen)
@@ -306,3 +307,11 @@ MIT License - see LICENSE for details.
 We document performance honestly. We benchmark rigorously. We're transparent about limitations.
 
 **Open source async runtime built with Nim.** Contributions welcome - see issues for high-impact areas.
+
+## Support
+
+If you find nimsync useful, you can support continued development:
+
+- [Ko-fi](https://ko-fi.com/codenimja)
+- [GitHub Sponsors](https://github.com/sponsors/codenimja)
+
