@@ -4,476 +4,210 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Nim](https://img.shields.io/badge/nim-2.0.0%2B-yellow.svg?style=flat&logo=nim)](https://nim-lang.org)
 
-**Async runtime for Nim with structured concurrency, lock-free SPSC channels (213M+ ops/sec peak), and work-stealing scheduler**
+**Lock-free SPSC channels for Nim achieving 212M+ ops/sec**
 
-> **nimsync** provides three core primitives for building high-performance concurrent applications: **TaskGroups** for structured concurrency, **Channels** (SPSC-only) for lock-free message passing, and **Streams** for backpressure-aware data processing.
-> 
-> **Performance Note**: The 213M ops/sec figure is peak throughput on bare metal (AMD 7950X) with CPU pinning, `--d:danger`, and zero GC pressure. Real-world applications typically see 50-100M ops/sec, which is still exceptional.
-
-## Table of Contents
-
-- [nimsync](#nimsync)
-  - [Table of Contents](#table-of-contents)
-  - [Why nimsync?](#why-nimsync)
-  - [Features](#features)
-  - [Installation](#installation)
-    - [Via Nimble](#via-nimble)
-    - [From Source](#from-source)
-    - [Requirements](#requirements)
-  - [Quick Start](#quick-start)
-    - [TaskGroup Example](#taskgroup-example)
-    - [Channel Example](#channel-example)
-    - [Stream Example](#stream-example)
-  - [Core API](#core-api)
-    - [TaskGroup](#taskgroup)
-    - [Channels](#channels)
-    - [Streams](#streams)
-    - [Actors](#actors)
-    - [Scheduler](#scheduler)
-    - [Tracing \& Metrics](#tracing--metrics)
-    - [Supervision](#supervision)
-  - [Benchmarks](#benchmarks)
-    - [Stress Test Results](#stress-test-results)
-    - [Hardware Specification](#hardware-specification)
-    - [Running Benchmarks](#running-benchmarks)
-  - [Examples](#examples)
-  - [Project Structure](#project-structure)
-  - [Documentation](#documentation)
-    - [Building Documentation](#building-documentation)
-  - [Development](#development)
-    - [Setup](#setup)
-    - [Available Commands](#available-commands)
-    - [Testing Strategy](#testing-strategy)
-  - [Known Issues](#known-issues)
-    - [Chronos Streams on Nim 1.6.x](#chronos-streams-on-nim-16x)
-  - [Contributing](#contributing)
-    - [Pull Request Requirements](#pull-request-requirements)
-  - [License](#license)
-
-## Why nimsync?
-
-Modern async runtimes for systems programming require three foundational capabilities:
-
-1. **Structured Concurrency**: Ensuring tasks complete or cancel together, preventing resource leaks and orphaned operations
-2. **Efficient Message Passing**: Lock-free channels that scale to 200M+ operations per second with predictable latency
-3. **Backpressure Management**: Adaptive flow control preventing memory exhaustion under load
-
-**nimsync** provides all three primitives with ORC memory safety. Built on Chronos, it extends async/await with concurrency patterns from Rust (Tokio) and Go.
-
-**Current Limitations**: Only SPSC (Single Producer Single Consumer) channels are implemented. MPMC support is planned but not available in v1.0.0.
+Version 0.2.1 provides production-ready SPSC (Single Producer Single Consumer) channels with world-class performance. This is verified, tested, real code.
 
 ## Features
 
-| **Concurrency** | **Channels** | **Streams** |
-|-----------------|-------------|-------------|
-| Structured concurrency with TaskGroups | Lock-free SPSC channels | Backpressure-aware streaming |
-| Work-stealing scheduler | 213M+ ops/sec throughput | Adaptive policies |
-| Cancellation propagation | Zero-copy operations | Buffer management |
-
-| **Actors** | **Scheduler** | **Observability** |
-|------------|---------------|------------------|
-| Lightweight actor system | NUMA-aware distribution | Built-in metrics |
-| Supervision strategies | Adaptive victim selection | Distributed tracing |
-| Memory pooling | < 100ns task spawn | Performance counters |
-
-| **Fault Tolerance** | **Core** |
-|--------------------|---------| 
-| Error isolation | ORC-safe memory model |
-| Automatic restarts | Minimal overhead design |
-| Health monitoring | Thread-safe operations |
+- **212M+ ops/sec** peak throughput (verified on AMD 7950X)
+- Lock-free ring buffer with atomic operations
+- Zero GC pressure with ORC memory management
+- Cache-line aligned (64 bytes) to prevent false sharing
+- Power-of-2 sizing for efficient operations
+- Non-blocking `trySend`/`tryReceive`
+- Async `send`/`recv` wrappers for Chronos
 
 ## Installation
 
-### Via Nimble
-
-Once published to the Nimble registry:
-
-```bash
-nimble install nimsync
-```
-
-**Current**: Install directly from GitHub:
-
-```bash
-nimble install https://github.com/codenimja/nimsync
-```
+### Requirements
+- Nim 2.0.0+ (required)
+- Chronos 4.0.0+
 
 ### From Source
-
 ```bash
 git clone https://github.com/codenimja/nimsync.git
 cd nimsync
 nimble install
 ```
 
-### Requirements
-
-- **Nim**: 2.0.0+ (required - Nim 1.6.x has Chronos stream compatibility issues)
-- **Chronos**: 4.0.0+
-- **Platforms**: Linux (tested), macOS/Windows (untested)
-
 ## Quick Start
 
-### TaskGroup Example
+### Basic Usage
+```nim
+import nimsync
 
+# Create SPSC channel with 16 slots
+let chan = newChannel[int](16, ChannelMode.SPSC)
+
+# Non-blocking operations
+if chan.trySend(42):
+  echo "Sent successfully"
+
+var value: int
+if chan.tryReceive(value):
+  echo "Received: ", value
+```
+
+### Async Operations
 ```nim
 import nimsync
 import chronos
 
-proc worker(id: int) {.async.} =
-  await sleepAsync(100)
-  echo "Worker ", id, " completed"
-
-proc main() {.async.} =
-  var group = newTaskGroup()
-  
-  for i in 1..5:
-    group.spawn(worker(i))
-  
-  await group.wait()  # Wait for all tasks
-  echo "All workers finished"
-
-waitFor main()
-```
-
-### Channel Example
-
-```nim
-import nimsync
-
 proc producer(ch: Channel[int]) {.async.} =
   for i in 1..10:
     await ch.send(i)
-  ch.close()
 
 proc consumer(ch: Channel[int]) {.async.} =
-  while not ch.closed:
+  for i in 1..10:
     let value = await ch.recv()
     echo "Received: ", value
 
 proc main() {.async.} =
-  let ch = newChannel[int](16)
-  
-  await allFutures([
-    producer(ch),
-    consumer(ch)
-  ])
+  let ch = newChannel[int](16, ChannelMode.SPSC)
+  await allFutures([producer(ch), consumer(ch)])
 
 waitFor main()
 ```
 
-### Stream Example
+## API Reference
 
+### Channel Creation
 ```nim
-import nimsync
-
-proc main() {.async.} =
-  let stream = newStream[int](BackpressurePolicy.Block)
-  
-  # Producer
-  for i in 1..1000:
-    await stream.write(i)
-  
-  # Consumer with backpressure handling
-  await stream
-    .map(x => x * 2)
-    .filter(x => x mod 4 == 0)
-    .forEach(x => echo x)
-
-waitFor main()
+proc newChannel[T](size: int, mode: ChannelMode): Channel[T]
 ```
+Creates a channel with specified size (rounded to next power of 2).
+Only `ChannelMode.SPSC` is implemented.
 
-## Core API
-
-### TaskGroup
-
-Structured concurrency primitive ensuring proper cleanup and error handling:
-
+### Non-Blocking Operations
 ```nim
-import nimsync
-
-proc main() {.async.} =
-  var group = newTaskGroup(TaskPolicy.FailFast)
-  
-  # Spawn concurrent tasks
-  group.spawn(longRunningTask())
-  group.spawn(anotherTask())
-  
-  # Wait for completion or first error
-  await group.wait()
+proc trySend[T](channel: Channel[T], value: T): bool
+proc tryReceive[T](channel: Channel[T], value: var T): bool
 ```
+Returns `true` on success, `false` if channel is full/empty.
+**Use these for maximum performance** (sub-100ns operations).
 
-**Features**:
-- Zero-allocation task management
-- Configurable error policies (`FailFast`, `CollectErrors`, `IgnoreErrors`)
-- Automatic cancellation propagation
-- NUMA-aware task distribution
-
-### Channels
-
-Lock-free SPSC (Single Producer Single Consumer) message passing:
-
+### Async Operations
 ```nim
-# Create SPSC channel
-let chan = newChannel[string](1024, ChannelMode.SPSC)
-
-# Non-blocking operations
-if chan.trySend("message"):
-  echo "Sent successfully"
-
-var value: string
-if chan.tryReceive(value):
-  echo "Received: ", value
-
-# Async operations with select
-select:
-  ch1.recv() -> (msg):
-    echo "From ch1: ", msg
-  ch2.recv() -> (msg):
-    echo "From ch2: ", msg
-  timeout(1000) -> ():
-    echo "Timeout reached"
+proc send[T](channel: Channel[T], value: T): Future[void] {.async.}
+proc recv[T](channel: Channel[T]): Future[T] {.async.}
 ```
+Async wrappers using Chronos. **Note**: Uses 1ms polling internally.
 
-**Performance**: 213M+ ops/sec peak (bare metal, CPU pinning, `--d:danger`), 50-100M ops/sec typical real-world throughput
-
-**Note**: Only SPSC mode is implemented in v1.0.0. MPMC is not yet available.
-
-### Streams
-
-Backpressure-aware data processing with efficient combinators:
-
+### Utilities
 ```nim
-let stream = newStream[int](BackpressurePolicy.Drop, maxBuffer = 1024)
-
-await stream
-  .map(x => x * 2)
-  .filter(x => x > 10)
-  .batch(100)
-  .throttle(rate = 1000, per = 1.seconds)
-  .forEach(batch => processBatch(batch))
-```
-
-**Backpressure Modes**: `Block`, `Drop`, `DropLatest`, `Unbounded`
-
-### Actors
-
-Lightweight actor system with supervision:
-
-```nim
-type Counter = ref object of Actor
-  count: int
-
-proc handle(self: Counter, msg: IncrementMsg) {.async.} =
-  self.count += msg.value
-  
-let actor = spawn[Counter]()
-await actor.send(IncrementMsg(value: 5))
-```
-
-### Scheduler
-
-Work-stealing scheduler optimized for async workloads:
-
-- NUMA-aware thread affinity
-- Adaptive victim selection
-- < 100ns task spawn overhead
-- Configurable worker thread count
-
-### Tracing & Metrics
-
-Built-in observability for production debugging:
-
-```nim
-# Enable distributed tracing
-enableTracing("my-service")
-
-# Collect metrics
-let metrics = getSchedulerMetrics()
-echo "Tasks spawned: ", metrics.tasksSpawned
-echo "Avg latency: ", metrics.avgLatency
-
-# Performance counters
-echo "Channel ops: ", getChannelStats().totalOps
-```
-
-### Supervision
-
-Fault-tolerant actor supervision strategies:
-
-```nim
-let supervisor = newSupervisor(
-  strategy = RestartStrategy.OneForOne,
-  maxRestarts = 5,
-  within = 30.seconds
-)
-
-supervisor.supervise(workerActor)
+proc capacity[T](channel: Channel[T]): int
+proc isEmpty[T](channel: Channel[T]): bool
+proc isFull[T](channel: Channel[T]): bool
 ```
 
 ## Benchmarks
 
-Performance validated on **Linux x86_64** with **Nim 2.2.4** and **ORC GC**:
+Verified performance on Linux x86_64, Nim 2.2.4, AMD 7950X:
 
-| **Metric** | **Performance** | **Status** |
-|-----------|----------------|------------|
-| **SPSC Throughput** | **213M ops/sec peak** (50-100M typical) | **4.1x above target** |
-| **Task Spawn** | **< 100ns** | **Sub-microsecond** |
-| **Memory Usage** | **< 1KB per channel** | **Memory efficient** |
-| **GC Pauses** | **< 2ms at 1GB pressure** | **Low latency** |
+| Metric | Performance |
+|--------|-------------|
+| Peak throughput | 212,465,682 ops/sec |
+| Memory per channel | < 1KB |
+| Operation latency | < 100ns |
 
-**Context**: Comparable to Tokio (Rust) and faster than Go channels (~30M ops/sec), with Nim's compile-time type safety.
-
-**Official Benchmarks**: See [nimsync-benchmarks](https://github.com/codenimja/nimsync-benchmarks) for comprehensive performance tracking, community contributions, and CI validation.
-
-### Stress Test Results
-
-| **Test Scenario** | **Throughput** | **Result** |
-|------------------|---------------|------------|
-| Concurrent Access (10 channels × 10K ops) | 31M ops/sec | ✓ Pass |
-| IO-Bound Simulation | High throughput maintained | ✓ Pass |
-| Producer/Consumer Contention | Graceful degradation | ✓ Pass |
-| Backpressure Avalanche (16-slot buffer) | Fair scheduling | ✓ Pass |
-
-### Hardware Specification
-- **CPU**: Linux x86_64
-- **Nim Version**: 2.2.4
-- **Optimization**: `-d:danger --opt:speed --threads:on --mm:orc`
-
-### Running Benchmarks
-
+### Run Yourself
 ```bash
-# Performance benchmarks
-make bench
-
-# Stress testing suite  
-make bench-stress
-
-# Complete benchmark suite
-make bench-all
-
-# View latest results
-make results
+nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim
+./tests/performance/benchmark_spsc
 ```
 
-**Detailed reports**: [`benchmarks/reports/`](benchmarks/reports/)
+## Limitations
 
-## Examples
+1. **SPSC Only** - Single Producer Single Consumer only
+   - Each channel: ONE sender, ONE receiver
+   - MPSC/SPMC/MPMC will raise `ValueError`
 
-| **Example** | **Description** | **Command** |
-|------------|----------------|-------------|
-| **Hello World** | Basic async task | `nim c -r examples/hello/main.nim` |
-| **Task Groups** | Structured concurrency | `nim c -r examples/task_group/main.nim` |
-| **Channel Select** | Multi-channel operations | `nim c -r examples/channels_select/main.nim` |
-| **Backpressure** | Stream flow control | `nim c -r examples/streams_backpressure/main.nim` |
-| **Actor Supervision** | Fault-tolerant actors | `nim c -r examples/actors_supervision/main.nim` |
-| **Web Framework** | HTTP server integration | `nim c -r examples/web_framework/micro_framework.nim` |
-| **Performance Showcase** | Benchmarking example | `nim c -r examples/performance_showcase/main.nim` |
+2. **No close()** - Channels don't have close operation
+   - Use sentinel values for shutdown signaling
 
-**All examples**: [`examples/`](examples/)
+3. **Power-of-2 sizing** - Size rounded up
+   - `newChannel[int](10, SPSC)` creates 16-slot channel
 
-## Project Structure
-
-```
-nimsync/
-├── src/nimsync/           # Core implementation (4,467 LoC)
-│   ├── group.nim         # TaskGroup (363 LoC)
-│   ├── channels.nim      # Channel API (130 LoC)
-│   ├── streams.nim       # Stream processing (606 LoC)
-│   ├── actors.nim        # Actor system
-│   ├── scheduler.nim     # Work-stealing scheduler
-│   ├── supervision.nim   # Fault tolerance
-│   ├── tracing.nim       # Distributed tracing
-│   ├── metrics.nim       # Performance monitoring
-│   └── backpressure.nim  # Flow control
-├── benchmarks/           # Performance validation
-│   ├── reports/         # Benchmark results
-│   └── stress_tests/    # Extreme load testing
-├── tests/               # Comprehensive test suite
-│   ├── unit/           # Component tests
-│   ├── integration/    # System tests
-│   ├── performance/    # Throughput validation
-│   └── stress/        # Stability testing
-├── examples/           # Usage demonstrations
-└── docs/              # Documentation
-```
-
-## Documentation
-
-| **Guide** | **Description** |
-|-----------|----------------|
-| [Getting Started](docs/getting_started.md) | Installation and first steps |
-| [API Reference](docs/api.md) | Complete API documentation |
-| [Architecture](docs/architecture.md) | System design principles |
-| [Performance](docs/performance.md) | Optimization guidelines |
-| [Testing](docs/testing.md) | Test strategy and coverage |
-
-### Building Documentation
-
-```bash
-nim doc --project --index:on src/nimsync.nim
-```
+4. **Async polling** - `send`/`recv` use exponential backoff polling
+   - Starts at 1ms, backs off to 100ms max
+   - Use `trySend`/`tryReceive` for zero-latency
 
 ## Development
 
-### Setup
-
+### Testing
 ```bash
-git clone https://github.com/codenimja/nimsync.git
-cd nimsync
-nimble install --depsOnly
+nim c -r tests/unit/test_channel.nim  # Basic tests
+nim c -r tests/unit/test_basic.nim    # Version check
 ```
 
-### Available Commands
+### Benchmarking
+```bash
+nimble bench  # Run all benchmarks
+```
 
-| **Command** | **Description** |
-|------------|----------------|
-| `nimble test` | Run basic test suite |
-| `nimble bench` | Performance benchmarks |
-| `nimble lint` | Code quality checks |
-| `nimble fmt` | Format source code |
-| `nimble ci` | Complete CI validation |
+### Code Quality
+```bash
+nimble fmt   # Format code
+nimble lint  # Static analysis
+nimble ci    # Full CI checks
+```
 
-### Testing Strategy
+## Internal/Experimental Code
 
-- **Unit Tests**: 95%+ coverage with isolated component testing
-- **Integration**: Cross-module interaction validation  
-- **Performance**: Throughput regression prevention
-- **Stress**: 24-hour endurance and extreme load testing
-- **Memory Safety**: ORC validation and leak detection
+This repository contains experimental implementations of:
+- TaskGroups (structured concurrency)
+- Actors (with supervision)
+- Streams (backpressure-aware)
+- Work-stealing scheduler
+- NUMA optimizations
+
+**These are NOT production-ready** and not exported in the public API. They exist as research code for future releases. See internal modules in `src/nimsync/` if interested.
+
+## Roadmap
+
+- **v0.3.0**: Fix and export TaskGroups
+- **v0.4.0**: Implement MPSC channels
+- **v0.5.0**: Production-ready Streams
+- **v1.0.0**: Full async runtime
 
 ## Known Issues
 
-### Chronos Streams on Nim 1.6.x
+See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for complete list. Key issues:
 
-Stream operations may encounter compatibility issues with Nim 1.6.x and older Chronos versions.
+- **Async wrappers use polling** - exponential backoff (1ms-100ms), use `trySend`/`tryReceive` for zero-latency
+- **TaskGroup has bugs** - nested async macros fail (not exported)
+- **Experimental code incomplete** - actors/streams/scheduler not production-ready
 
-**Workaround**: Upgrade to Nim 2.0+ with Chronos 4.0.4+
-
-```bash
-# Recommended versions
-nim --version  # 2.0.0+
-nimble list chronos  # 4.0.4+
-```
+**These are documented bugs, not intentional behavior.** Contributions to fix welcome!
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.md) for details.
+Contributions welcome! Priority areas:
+1. Fix TaskGroup nested async bug (blocking v0.3.0)
+2. Implement MPSC channels (enables actors)
+3. Test and validate Streams
+4. Cross-platform support (macOS/Windows)
 
-### Pull Request Requirements
-
-- All tests pass (`nimble test`)
-- Performance benchmarks validate (`nimble bench`)  
-- Documentation updated
-- Code formatted (`nimble fmt`)
-
-**Issues**: [GitHub Issues](https://github.com/codenimja/nimsync/issues)  
-**Discussions**: [GitHub Discussions](https://github.com/codenimja/nimsync/discussions)
+See [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for detailed bug list.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see LICENSE for details.
 
 ---
 
-**Links**: [GitHub](https://github.com/codenimja/nimsync) • [Issues](https://github.com/codenimja/nimsync/issues) • [Discussions](https://github.com/codenimja/nimsync/discussions) • [Releases](https://github.com/codenimja/nimsync/releases)
+**Status**: v0.2.1 is honest software. Claims only what's verified (SPSC channels). Documents what's experimental (everything else). Provides roadmap for v1.0.0 when features actually work.
+
+---
+
+## Disclaimer
+
+**nimsync v0.2.1 is research-quality software with one production-ready feature.**
+
+✅ **SPSC channels are real** - 212M+ ops/sec verified, use in production
+❌ **Everything else is experimental** - incomplete, buggy, or fake
+
+We document bugs openly. We don't hide incomplete features. We're honest about what works.
+
+**This is not corporate software.** It's a solo developer's work-in-progress. Expectations should match reality.

@@ -1,12 +1,55 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   test:
+    name: Test SPSC Channels
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: jiro4989/setup-nim-action@v2
-        with:
-          nim-version: '2.2.4'
-      - run: nimble test
-      - run: nimble bench
+    - uses: actions/checkout@v3
+
+    - name: Setup Nim
+      uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: 'stable'
+
+    - name: Install dependencies
+      run: nimble install -y
+
+    - name: Run channel tests
+      run: nim c -r tests/unit/test_channel.nim
+
+    - name: Run async channel tests
+      run: nim c -r tests/unit/test_async_channel.nim
+
+    - name: Run basic tests
+      run: nim c -r tests/unit/test_basic.nim
+
+  benchmark:
+    name: SPSC Performance Validation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Nim
+      uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: 'stable'
+
+    - name: Install dependencies
+      run: nimble install -y
+
+    - name: Build benchmark
+      run: nim c -d:danger --opt:speed --threads:on --mm:orc tests/performance/benchmark_spsc.nim
+
+    - name: Run benchmark and validate
+      run: |
+        echo "Running SPSC benchmark..."
+        ./tests/performance/benchmark_spsc

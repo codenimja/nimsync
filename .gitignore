@@ -51,3 +51,11 @@ src/htmldocs/
 # Internal roadmap
 ROADMAP_v1.0.md
 claude.md
+
+# Claude Code context (local only)
+CLAUDE.md
+
+# Development/internal files
+STATUS_INTERNAL.md
+ROADMAP*.md
+SUPPORT.md

@@ -2,11 +2,11 @@
 import std/strformat
 
 const
-  NIMSYNC_MAJOR* = 1
-  NIMSYNC_MINOR* = 0
-  NIMSYNC_PATCH* = 0
+  NIMSYNC_MAJOR* = 0
+  NIMSYNC_MINOR* = 2
+  NIMSYNC_PATCH* = 1
   NIMSYNC_PRERELEASE* = ""
-  NIMSYNC_BUILD* = "production"
+  NIMSYNC_BUILD* = "experimental"
 
 proc version*: string =
   if NIMSYNC_PRERELEASE != "":
