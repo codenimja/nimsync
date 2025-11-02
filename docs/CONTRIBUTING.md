@@ -90,6 +90,54 @@ nimble testStress
 4. Include comprehensive documentation
 5. Update CI configuration if needed
 
+## Commit Message Guidelines
+
+We follow Conventional Commits format for all commit messages.
+
+### Format
+
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `chore`: Maintenance tasks (dependencies, tooling)
+- `refactor`: Code restructuring without behavior change
+- `test`: Test additions or modifications
+- `perf`: Performance improvements
+- `ci`: CI/CD configuration changes
+- `revert`: Revert previous commit
+
+### Examples
+
+```
+feat(channels): add MPSC support
+fix(async): correct polling timeout in recv()
+docs: update README with verified benchmark data
+chore: bump Nim version to 2.2.0
+perf(channels): optimize ring buffer allocation
+```
+
+### Scope
+
+Optional but recommended. Indicates the module affected:
+- `channels`: Channel-related changes
+- `async`: Async/await functionality
+- `benchmarks`: Performance benchmarks
+- `tests`: Test infrastructure
+
+### Enforcement
+
+A commit-msg hook validates format automatically. See `.github/COMMIT_GUIDELINES.md` for details.
+
 ## Code Style
 
 ### Naming Conventions
