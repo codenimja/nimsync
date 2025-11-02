@@ -197,10 +197,10 @@ This repository contains experimental implementations of:
 
 ## Roadmap
 
-- **v0.3.0**: Fix and export TaskGroups
-- **v0.4.0**: Implement MPSC channels
-- **v0.5.0**: Production-ready Streams
-- **v1.0.0**: Full async runtime
+- ✅ **v1.0.0**: Production SPSC channels (DONE!)
+- **v1.1.0**: MPSC channels + TaskGroup fixes
+- **v1.2.0**: Production-ready Streams
+- **v2.0.0**: Full async runtime with actors
 
 ## Known Issues
 
