@@ -75,3 +75,4 @@ CLAUDE.md
 STATUS_INTERNAL.md
 ROADMAP_v1.0.md
 BENCHMARK_RESULTS_FOR_NIM_CREATOR.md
+tests/unit/channels/test_mpsc_channel
