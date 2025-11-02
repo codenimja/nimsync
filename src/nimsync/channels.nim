@@ -16,7 +16,7 @@ proc send*[T](c: channel_spsc.Channel[T], value: T): Future[void] {.async.} =
   while true:
     if channel_spsc.trySend(c, value):
       return
-    await sleepAsync(milliseconds(backoff))
+    await sleepAsync(backoff)
     backoff = min(backoff * 2, 100)  # Cap at 100ms
 
 proc recv*[T](c: channel_spsc.Channel[T]): Future[T] {.async.} =
@@ -27,5 +27,5 @@ proc recv*[T](c: channel_spsc.Channel[T]): Future[T] {.async.} =
   while true:
     if channel_spsc.tryReceive(c, value):
       return value
-    await sleepAsync(milliseconds(backoff))
+    await sleepAsync(backoff)
     backoff = min(backoff * 2, 100)  # Cap at 100ms
