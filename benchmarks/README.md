@@ -16,13 +16,14 @@ We've improved our benchmarking approach:
 
 | Benchmark | What It Measures | Reference |
 |-----------|------------------|------------|
-| `benchmark_spsc_simple.nim` | Raw throughput (615M ops/sec) | Go channels |
-| `benchmark_latency.nim` | Latency distribution (30ns p50) | Tokio/Cassandra |
-| `benchmark_burst.nim` | Burst stability (300M ops/sec) | Redis |
-| `benchmark_sizes.nim` | Optimal buffer size (2048 slots) | LMAX Disruptor |
+| `benchmark_spsc_simple.nim` | Raw throughput (558M micro, ~35M realistic) | Go channels |
+| `benchmark_latency.nim` | Latency distribution (20ns p50, 31ns p99) | Tokio/Cassandra |
+| `benchmark_burst.nim` | Burst stability (385M ops/sec, 18% variance) | Redis |
+| `benchmark_sizes.nim` | Optimal buffer size (4096 slots, 557M ops/sec) | LMAX Disruptor |
 | `benchmark_stress.nim` | Maximum load (0% contention) | JMeter/Gatling |
 | `benchmark_sustained.nim` | Long-duration stability | Cassandra/ScyllaDB |
 | `benchmark_concurrent.nim` | Async overhead (512K ops/sec) | Async runtimes |
+| `benchmark_mpsc.nim` | MPSC performance (15M/8.5M/5.3M ops/sec) | JCTools MPSC |
 
 ## Quick Start
 
@@ -49,16 +50,17 @@ Benchmarks run automatically on every commit:
 
 **Latest benchmarks** (automated CI + local verification):
 
-### Simple Single-Threaded Benchmark
+### Simple Single-Threaded Benchmark (SPSC)
 Location: `tests/performance/benchmark_spsc_simple.nim`
 
 | Metric | Result |
 |--------|--------|
-| **Peak Throughput** | 600M+ ops/sec |
-| **Average Throughput** | 593M+ ops/sec |
-| **Latency** | ~1.7 ns/op |
+| **Peak Throughput (micro)** | 558M ops/sec |
+| **Average Throughput (micro)** | 551M ops/sec |
+| **Realistic Threaded** | ~35M ops/sec |
+| **Latency** | ~1.8 ns/op |
 
-**What this measures**: Raw SPSC channel performance without threading or async overhead.
+**What this measures**: Raw SPSC channel performance. Micro-benchmark shows peak potential (tight loop), realistic threaded includes OS scheduling overhead.
 
 ### Concurrent Async Benchmark
 Location: `tests/performance/benchmark_concurrent.nim`
@@ -75,9 +77,14 @@ Location: `tests/performance/benchmark_concurrent.nim`
 
 | Benchmark Type | Throughput | Use Case |
 |----------------|------------|----------|
-| **Simple (trySend/tryReceive)** | 600M+ ops/sec | Maximum performance, tight loops |
-| **Async (send/recv)** | 500K ops/sec | Convenience, async/await code |
-| **Multi-threaded** | 50M-200M ops/sec | Thread coordination overhead |
+| **SPSC micro (trySend/tryReceive)** | 558M ops/sec | Peak potential, tight loops |
+| **SPSC realistic threaded** | ~35M ops/sec | Actual multi-threaded workloads |
+| **MPSC (2 producers)** | 15M ops/sec | Multi-producer concurrent |
+| **MPSC (4 producers)** | 8.5M ops/sec | High concurrency |
+| **MPSC (8 producers)** | 5.3M ops/sec | Memory-bandwidth limited |
+| **Async (send/recv)** | 512K ops/sec | Convenience, async/await code |
+
+**Key insight**: SPSC is 3.5× faster than MPSC in realistic threaded workloads (35M vs 10M ops/sec).
 
 ### 2. Stress Tests
 

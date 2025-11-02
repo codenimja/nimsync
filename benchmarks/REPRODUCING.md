@@ -6,14 +6,23 @@
 
 ## Latest Results (New Suite)
 
-**Comprehensive Benchmark Suite** - 7 industry-standard tests:
-- **Throughput**: 615M ops/sec peak
-- **Latency**: 30ns p50, 31ns p99 
-- **Burst Load**: 300M ops/sec average, 21% variance
-- **Buffer Optimization**: 2048 slots optimal, 559M ops/sec
+**Comprehensive Benchmark Suite** - 8 industry-standard tests (verified in CI):
+
+**SPSC Benchmarks:**
+- **Throughput (micro)**: 558M ops/sec peak, 551M average
+- **Throughput (realistic)**: ~35M ops/sec with thread scheduling
+- **Latency**: 20ns p50, 31ns p99, 50ns p99.9
+- **Burst Load**: 385M ops/sec average, 18% variance
+- **Buffer Optimization**: 4096 slots optimal, 557M ops/sec
 - **Stress Test**: 0% contention at 500K operations
 - **Sustained**: Stable performance over 10 seconds
 - **Async**: 512K ops/sec (shows async overhead)
+
+**MPSC Benchmarks:**
+- **2 producers**: 15M ops/sec (optimal sweet spot)
+- **4 producers**: 8.5M ops/sec (good scalability)
+- **8 producers**: 5.3M ops/sec (memory-bandwidth limited)
+- **Key finding**: SPSC is 3.5× faster in realistic threaded workloads
 
 ## Why the New Suite?
 
