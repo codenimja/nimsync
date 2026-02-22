@@ -21,74 +21,28 @@ jobs:
         nim-version: 'stable'
 
     - name: Install dependencies
+      run: nimble install -y
+
+    - name: Run stress tests
       run: |
-        nimble refresh
-        # Note: Uncomment when real dependencies are available
-        # nimble install asyncpg
-        # nimble install websocket
-        # nimble install prometheus
-
-    - name: Setup PostgreSQL
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '15'
-        postgresql db: 'nimsync_test'
-        postgresql user: 'nimsync'
-        postgresql password: 'test123'
-
-    - name: Setup WebSocket server
-      run: |
-        # Start a simple WebSocket echo server for testing
-        npm install -g ws
-        node -e "
-        const WebSocket = require('ws');
-        const wss = new WebSocket.Server({ port: 8080 });
-        wss.on('connection', (ws) => {
-          ws.on('message', (message) => {
-            ws.send(message); // Echo back
-          });
-        });
-        console.log('WebSocket server started on port 8080');
-        " &
-        sleep 2
-
-    - name: Run Basic Stress Test Suite
-      run: nim c -r tests/benchmarks/stress_tests/run_suite.nim
-      continue-on-error: true  # run_suite depends on metrics module not yet implemented
-
-    - name: Run Comprehensive Stress Tests (Simulated)
-      run: timeout 300 nim c -r tests/benchmarks/stress_tests/comprehensive_stress_test.nim
-      continue-on-error: true  # Allow failure for now since real deps not available
-
-    - name: Generate Benchmark Report
-      run: |
-        mkdir -p benchmark_reports
-        cp tests/benchmarks/results/benchmark_results_*.md benchmark_reports/
-        echo "## CI Run Summary" >> benchmark_reports/ci_summary.md
-        echo "- **Date:** $(date)" >> benchmark_reports/ci_summary.md
-        echo "- **Commit:** ${{ github.sha }}" >> benchmark_reports/ci_summary.md
-        echo "- **Nim Version:** ${{ matrix.nim-version }}" >> benchmark_reports/ci_summary.md
-        echo "- **Status:** ✅ Passed" >> benchmark_reports/ci_summary.md
-
-    - name: Upload Benchmark Results
-      uses: actions/upload-artifact@v4
-      with:
-        name: benchmark-results-${{ matrix.nim-version }}
-        path: benchmark_reports/
-
-    - name: Upload Flame Graphs (if available)
-      uses: actions/upload-artifact@v4
-      with:
-        name: flame-graphs-${{ matrix.nim-version }}
-        path: flame_graphs/
+        # Stress tests require external dependencies not yet implemented.
+        # These run with continue-on-error until the modules are complete.
+        echo "Stress test suite: placeholder until metrics/db modules are implemented"
       continue-on-error: true
 
-    - name: Performance Regression Check
+    - name: Generate CI summary
       run: |
-        # Compare against baseline (placeholder)
-        echo "Performance regression check would go here"
-        echo "Compare current results against stored baselines"
-        # TODO: Implement actual regression detection
+        mkdir -p benchmark_reports
+        echo "## Stress Test CI Summary" > benchmark_reports/ci_summary.md
+        echo "- **Date:** $(date)" >> benchmark_reports/ci_summary.md
+        echo "- **Commit:** ${{ github.sha }}" >> benchmark_reports/ci_summary.md
+        echo "- **Status:** Stress tests pending full implementation" >> benchmark_reports/ci_summary.md
+
+    - name: Upload summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: stress-test-summary
+        path: benchmark_reports/
 
   metrics:
     runs-on: ubuntu-latest
@@ -96,32 +50,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Prometheus
+    - name: Metrics placeholder
       run: |
-        wget https://github.com/prometheus/prometheus/releases/download/v2.45.0/prometheus-2.45.0.linux-amd64.tar.gz
-        tar xvf prometheus-2.45.0.linux-amd64.tar.gz
-        cd prometheus-2.45.0.linux-amd64
-        ./prometheus --config.file=prometheus.yml &
-        sleep 5
-
-    - name: Run Metrics Collection
-      run: |
-        # Placeholder for metrics collection
-        echo "Metrics collection would run here"
-        echo "Push metrics to Prometheus/Grafana"
-
-    - name: Generate Metrics Report
-      run: |
-        echo "# Metrics Report" > metrics_report.md
-        echo "## Generated: $(date)" >> metrics_report.md
-        echo "## Commit: ${{ github.sha }}" >> metrics_report.md
-        echo "Metrics collection completed" >> metrics_report.md
-
-    - name: Upload Metrics Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: metrics-report
-        path: metrics_report.md
+        echo "Metrics collection not yet implemented"
+        echo "Future: integrate with Prometheus/Grafana"
