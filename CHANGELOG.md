@@ -5,6 +5,25 @@ All notable changes to nimsync will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-02-22
+
+### Changed
+- Moved 10 experimental modules (actors, streams, group, etc.) to `src/nimsync/experimental/`
+- Backward-compatible shims kept at old paths — existing imports unchanged
+- Moved `BENCHMARKS.md` to `docs/`
+- `nimble bench` now points to `tests/performance/run_all_benchmarks.sh`
+
+### Fixed
+- Version inconsistency: `VERSION.nim` and `nimsync.nimble` now both reflect v1.1.0
+- Committed ELF binaries removed from git history (17 test/example binaries)
+- Stale benchmark scripts in `scripts/` removed (referenced deprecated `benchmarks/` dir)
+- Duplicate `docs/LICENSE` removed
+- Accidentally committed benchmark CSV results removed
+
+### Removed
+- Deprecated root `benchmarks/` folder (contents superseded by `tests/performance/`)
+- `src/nimasync_simple.nim` — orphan file with typo in name, never exported
+
 ## [1.1.0] - 2025-11-02
 
 ### Added

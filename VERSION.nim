@@ -2,11 +2,11 @@
 import std/strformat
 
 const
-  NIMSYNC_MAJOR* = 0
-  NIMSYNC_MINOR* = 2
-  NIMSYNC_PATCH* = 1
+  NIMSYNC_MAJOR* = 1
+  NIMSYNC_MINOR* = 1
+  NIMSYNC_PATCH* = 0
   NIMSYNC_PRERELEASE* = ""
-  NIMSYNC_BUILD* = "experimental"
+  NIMSYNC_BUILD* = ""
 
 proc version*: string =
   if NIMSYNC_PRERELEASE != "":
@@ -15,4 +15,4 @@ proc version*: string =
     fmt"{NIMSYNC_MAJOR}.{NIMSYNC_MINOR}.{NIMSYNC_PATCH}"
 
 when isMainModule:
-  echo fmt"nimsync v{version()} ({NIMSYNC_BUILD})"
+  echo fmt"nimsync v{version()}"

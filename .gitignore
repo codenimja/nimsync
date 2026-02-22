@@ -5,19 +5,42 @@
 *.so
 *.dylib
 
-# Test binaries
-test
-test_import
-VERSION
-tests/test_*
-tests/*/*.exe
-tests/*/*/*.exe
-
-# Compiled benchmarks
+# Compiled output — extensionless ELF binaries produced by `nim c`
+# These match the pattern: same name as a .nim file but without the extension
+src/private/channel_spsc
+src/private/atomic_helpers
+examples/hello/main
+examples/structured_concurrency/main
+examples/*/main
+tests/simple_runner
+tests/run_tests
+tests/support/simple_runner
+tests/support/async_test_framework
+tests/support/progress
+tests/unit/test_*
+!tests/unit/test_*.nim
+tests/unit/cancel/test_*
+!tests/unit/cancel/test_*.nim
+tests/unit/channels/test_*
+!tests/unit/channels/test_*.nim
+tests/unit/groups/test_*
+!tests/unit/groups/test_*.nim
+tests/integration/test_*
+!tests/integration/test_*.nim
 tests/performance/benchmark_*
 !tests/performance/benchmark_*.nim
 !tests/performance/*.sh
 !tests/performance/*.md
+tests/benchmarks/stress_tests/*
+!tests/benchmarks/stress_tests/*.nim
+!tests/benchmarks/stress_tests/*.md
+!tests/benchmarks/stress_tests/Makefile
+tests/smoke/*
+!tests/smoke/*.nim
+tests/e2e/test_*
+!tests/e2e/test_*.nim
+tests/scenarios/*
+!tests/scenarios/*.nim
 
 # Benchmark results
 benchmark_results_*/

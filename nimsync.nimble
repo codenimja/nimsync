@@ -1,5 +1,5 @@
 # nimsync.nimble
-version       = "1.0.0"
+version       = "1.1.0"
 author        = "boonzy"
 description   = "Production-ready async runtime with lock-free SPSC channels (615M ops/sec, 31ns P99)"
 license       = "MIT"
@@ -14,7 +14,7 @@ task test, "Run all tests":
   exec "./scripts/test.sh full"
 
 task bench, "Run performance benchmarks":
-  exec "./scripts/run_all_benchmarks.sh"
+  exec "./tests/performance/run_all_benchmarks.sh"
 
 task fmt, "Format source code":
   exec "nimpretty --backup:off src"

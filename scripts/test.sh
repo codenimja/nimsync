@@ -80,7 +80,7 @@ case $MODE in
 
     # Binary size
     echo "Binary sizes:"
-    ls -lh tests/simple_runner | awk '{print $5 " " $9}'
+    ls -lh tests/support/simple_runner | awk '{print $5 " " $9}'
 
     echo "⚡ Performance testing completed"
     ;;
