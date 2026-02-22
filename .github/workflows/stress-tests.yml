@@ -10,19 +10,15 @@ on:
 jobs:
   stress-tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        nim-version: ['2.0.x']
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Setup Nim
-      uses: alaviss/setup-nim@0.1.1
+      uses: jiro4989/setup-nim-action@v1
       with:
-        path: nim
-        version: ${{ matrix.nim-version }}
+        nim-version: 'stable'
 
     - name: Install dependencies
       run: |
